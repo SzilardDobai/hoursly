@@ -1,8 +1,10 @@
 # hoursly
 ## recording hours website
 
+---
+
 ### basic website functions:
-  #### users:\
+  #### users:
     - admin
     - basic user
   
@@ -27,7 +29,7 @@
     - at the beginning of the week, a new batch of untracked hours records is generated for every user of every active project    
     - user receives a reminder each friday to log hours
     
-    
+---
     
 ### technologies:
   - front-end: ReactJS
