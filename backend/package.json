@@ -1,0 +1,30 @@
+{
+  "name": "pw_backend",
+  "version": "1.0.0",
+  "description": "backend for recording hours website",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Szilard Dobai",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cjs": "0.0.11",
+    "cors": "^2.8.5",
+    "cron": "^1.7.2",
+    "crone": "0.0.1",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.6",
+    "express-session": "^1.17.0",
+    "fs": "0.0.1-security",
+    "json": "^9.0.6",
+    "mysql": "^2.17.1",
+    "nodemailer": "^6.3.1",
+    "path": "^0.12.7",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.2.1",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
