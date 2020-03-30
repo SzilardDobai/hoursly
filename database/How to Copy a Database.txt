@@ -1,0 +1,19 @@
+	How to Copy a Database
+	
+Step 1. Download MySQL dump file "hoursly_db.sql"
+Step 2. Go to C:\Program Files\MySQL\MySQL Server 8.0\bin
+Step 3. Paste "hoursly_db.sql"
+Step 4. Open cmd window
+Step 5. Run:
+		cd "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+Step 6. Run:
+		mysql -u root -p hoursly_db < hoursly_db.sql
+Step 7. Done
+
+
+
+If step 6 returns the error "ERROR 1049 (42000): Unknown database 'hoursly_db'", do the following before step 6:
+Run:
+	mysql -u root -p
+		CREATE DATABASE hoursly_db
+	exit
