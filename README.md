@@ -1,4 +1,4 @@
-![hoursly_logo](https://imgur.com/a/Z8Ucr0S)
+![hoursly_logo](https://i.imgur.com/r71EQJI.png)
 # hoursly
 ## recording hours website
 
