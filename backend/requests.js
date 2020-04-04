@@ -20,5 +20,17 @@ module.exports = {
       res.send(users)
       console.log(`Succesfully retrieved all users.`)
     }
+  },
+
+  getRoles: async (req, res) => {
+    let roles = await query('SELECT * FROM roles',[])
+    
+    if (roles === -1) {
+      roles = []
+      console.log('Error retrieving roles.')
+    } else {
+      res.send(roles)
+      console.log(`Succesfully retrieved all roles.`)
+    }
   }
 }
