@@ -78,5 +78,37 @@ module.exports = {
       console.log(`Succesfully retrieved all users.`)
     }
     res.send(usr_arr)
-  }
+  },
+
+  authentication: async (req, res) => {
+    // sign in user
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if (username && password) {
+      let auth = await query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password])
+      if (auth.length > 0) {
+        let user_id = auth[0].user_id
+        auth = auth[0]
+
+        let role = await query('SELECT * FROM user_role_link WHERE user_id = ?', [user_id])
+        if (role.length > 0) {
+          let role_id = role[0].role_id;
+          auth.role_id = role_id
+          
+          res.send({ auth });
+          console.log('Login successful!')
+        } else {
+          console.log('Error getting user role!')
+          res.status(400).send('Error getting user role!');
+        }
+      } else {
+        console.log('Incorrect username/password!')
+        res.status(400).send('Incorrect username/password!');
+      }
+    } else {
+      console.log('Missing login information!')
+      res.status(400).send('Missing login information!');
+    }
+  },
 }
