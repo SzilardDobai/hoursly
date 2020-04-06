@@ -9,6 +9,31 @@ let query = async (sql, params) => {
   })
 }
 
+function generatePassword() {
+  var charset_low = "abcdefghijklmnopqrstuvwxyz",
+    charset_upp = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    charset_dig = "0123456789",
+    charset_sym = "~!@#$%^&*()_+-={}[]|.<>?",
+    retVal = "";
+  for (var i = 0, n = charset_low.length; i < 7; ++i) {
+    retVal += charset_low.charAt(Math.floor(Math.random() * n));
+  }
+  for (var i = 7, n = charset_upp.length; i < 12; ++i) {
+    retVal += charset_upp.charAt(Math.floor(Math.random() * n));
+  }
+  for (var i = 12, n = charset_dig.length; i < 14; ++i) {
+    retVal += charset_dig.charAt(Math.floor(Math.random() * n));
+  }
+  for (var i = 14, n = charset_sym.length; i < 16; ++i) {
+    retVal += charset_sym.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+}
+
+const hashCode = function (s) {
+  return s.split("").reduce(function (a, b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
+}
+
 module.exports = {
   getUsers: async (req, res) => {
     // get all users from the database
@@ -111,4 +136,23 @@ module.exports = {
       res.status(400).send('Missing login information!');
     }
   },
+
+  addUser: async (req, res) => {
+    // adds a new user to database
+    generatedPassword = generatePassword()
+
+    await query('INSERT INTO users (username, password, first_name, last_name, department, position) VALUES (?,?,?,?,?,?)', [req.body.username, hashCode(generatedPassword), req.body.first_name, req.body.last_name, req.body.department, req.body.position]
+    ).then(async (result) => {
+      console.log(`Sucessfully added user ${req.body.username}.`)
+      await query('INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)', [result.insertId, 2]
+      ).then(() => {
+        console.log(`Sucessfully added role 'user' to user ${req.body.username}.`)
+      }).catch((e) => {
+        console.log(`Error adding role 'user' to user ${req.body.username}.`)
+      })
+    }).catch((e) => {
+      console.log(`Error adding user ${req.body.username}.`)
+    })
+    res.send()
+  }
 }

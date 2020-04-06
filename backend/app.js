@@ -70,6 +70,7 @@ app.get('/getProjects/:userId', services.getProjects);
 app.get('/getUsersFromProject/:projectId', services.getUsersFromProject);
 
 app.post('/auth', services.authentication);
+app.post('/addUser', services.addUser);
 
 // set the app to listen on the port
 app.listen(port, () => {
