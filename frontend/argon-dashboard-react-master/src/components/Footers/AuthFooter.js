@@ -29,8 +29,8 @@ class Login extends React.Component {
           <Container>
             <Row className="align-items-center justify-content-xl-between">
               <Col xl="6">
-                <div className="copyright text-center text-xl-left text-muted">
-                  © 2018{" "}
+              <div className="copyright text-center text-xl-left text-muted">
+                  © 2020{" "}
                   <a
                     className="font-weight-bold ml-1"
                     href="https://www.creative-tim.com?ref=adr-auth-footer"
@@ -38,6 +38,13 @@ class Login extends React.Component {
                   >
                     Creative Tim
                   </a>
+                  <a
+                    href="https://www.instagram.com/szilard.dobai"
+                  > | Szilárd Andrei DOBAI </a>
+                  &
+                  <a
+                    href="https://www.instagram.com/dragomir.alex98/"
+                  > Alexandru Dacian DRAGOMIR</a>
                 </div>
               </Col>
               <Col xl="6">
