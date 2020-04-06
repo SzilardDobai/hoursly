@@ -154,5 +154,22 @@ module.exports = {
       console.log(`Error adding user ${req.body.username}.`)
     })
     res.send()
-  }
+  },
+
+  deleteUser: async (req, res) => {
+    // delete user from database by user_id (can be array)
+    let idsList = req.body.idsList
+    if (idsList) {
+      if (idsList.length > 0) {
+        idsList.forEach(async id => {
+          await query(`DELETE FROM users WHERE user_id=?`, [id]).then(() => {
+            console.log(`Sucessfully deleted user ${id}.`)
+          }).catch(() => {
+            console.log(`Error deleting user ${id}.`)
+          })
+        })
+      }
+    }
+    res.send()
+  },
 }
