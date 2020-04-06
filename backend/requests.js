@@ -111,7 +111,7 @@ module.exports = {
     let password = req.body.password;
 
     if (username && password) {
-      let auth = await query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password])
+      let auth = await query('SELECT user_id, username, first_name, last_name, position, department, picture FROM users WHERE username = ? AND password = ?', [username, password])
       if (auth.length > 0) {
         let user_id = auth[0].user_id
         auth = auth[0]
