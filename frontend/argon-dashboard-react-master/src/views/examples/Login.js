@@ -16,6 +16,7 @@
 
 */
 import React from "react";
+import UserService from '../../services/userServices.js';
 
 // reactstrap components
 import {
@@ -47,11 +48,22 @@ class Login extends React.Component {
     };
   }
 
-  login = (event) => {
+  login = async (event) => {
     let username = this.state.username
     let password = this.state.password
     let passwordCheck = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=.<>|[\]{}?])[a-zA-Z0-9!@#$%^&*()_+\-=.<>|[\]{}?]{8,}$/
     let usernameCheck = /^(?=.*[a-z])[a-z0-9.]{1,}$/
+
+    const hashCode = function (s) {
+      return s.split("").reduce(function (a, b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
+    }
+
+    const bufferToBase64 = function (buf) {
+      var binstr = Array.prototype.map.call(buf, function (ch) {
+        return String.fromCharCode(ch);
+      }).join('');
+      return btoa(binstr);
+    }
    
     event.preventDefault();
 
@@ -80,18 +92,36 @@ class Login extends React.Component {
         dangerPassword: 'has-danger',
       })
     } else {
-      console.log(username, password)
+      password = hashCode(password)
 
-      this.setState({
-        loginSuc: true,
-        loginErr: false,
-        loginErrData: '',
-        dangerUsername: 'has-success',
-        dangerPassword: 'has-success',
+      let payload = {
+        username,
+        password
+      }
+
+      const authPromise = UserService.auth(payload).then(result => result)
+      await Promise.all([authPromise]).then(auth => {
+        auth = auth[0]['auth']
+        for (var key in auth) {
+          if (key === 'picture') {
+            if (auth.picture === null)
+              sessionStorage.setItem('picture', null)
+            else
+              sessionStorage.setItem('picture', bufferToBase64(auth.picture.data))
+          }
+          else
+            sessionStorage.setItem(key, auth[key])
+        }
+    
+        this.setState({
+          loginSuc: true,
+          loginErr: false,
+          loginErrData: '',
+          dangerUsername: 'has-success',
+          dangerPassword: 'has-success',
+        })
       })
     }
-
-
   }
 
   onFormSubmit = (e) => {
