@@ -172,4 +172,20 @@ module.exports = {
     }
     res.send()
   },
+
+  checkUsername: async (req, res) => {
+    // checks if there is already a user with the given username in the database
+    let username = req.params.username
+
+    await query('SELECT username FROM users WHERE username=?', [username]).then(result => {
+      if (result.length > 0) {
+        res.send(true)
+        console.log('Username ' + username + ' already exists.')
+      }
+      else {
+        res.send(false)
+        console.log('Username ' + username + ' does not exist.')
+      }
+    }).catch(e => console.log('Error checking username \"' + username + '\".'))
+  },
 }
