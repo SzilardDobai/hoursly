@@ -25,11 +25,11 @@ class Login extends React.Component {
   render() {
     return (
       <>
-        <footer className="py-5">
+        <footer className="py-5" style={{fontSize: "small"}}>
           <Container>
             <Row className="align-items-center justify-content-xl-between">
               <Col xl="6">
-              <div className="copyright text-center text-xl-left text-muted">
+              <div className="copyright text-center text-x1-left text-muted">
                   © 2020{" "}
                   <a
                     className="font-weight-bold ml-1"
