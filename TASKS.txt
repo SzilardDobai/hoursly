@@ -3,10 +3,10 @@ TASKS
 - BACK-END:
 	- requests:
 		- GET:
-			- getUsers
-			- getRoles
-			- getProjects/:userId
-			- getUsersFromProject/:projectId
+			- getUsers									- DONE
+			- getRoles									- DONE
+			- getProjects/:userId								- DONE
+			- getUsersFromProject/:projectId						- DONE
 			- getProjectInfo/:projectId
 			- getUserInfo/:userId
 			- getAllUserRecords/:userName
@@ -63,15 +63,15 @@ TASKS
 			- addHours
 	- PAGES:
 		- Login:
-			- layout (logo, texts, in-app picture)
+			- layout (logo, texts, in-app picture)						- DONE
 			- login form:
-				- username input
-				- password input
-				- username validation
-				- password validation
+				- username input							- DONE
+				- password input							- DONE
+				- username validation							- DONE
+				- password validation							- DONE
 				- hash password
 				- sign in button
-				- save data to session (username, role, picture
+				- save data to session (username, role, picture)
 		- Dashboard:
 			- layout (user picture, welcome text, card)
 			- for admin:
@@ -79,7 +79,7 @@ TASKS
 				- all inactive projects
 				- onHover: get project info
 			- for user:
-				- user info (username, email address, first name, last name, department, position
+				- user info (username, email address, first name, last name, department, position)
 				- user active projects
 			- change profile picture button
 			- change password button
