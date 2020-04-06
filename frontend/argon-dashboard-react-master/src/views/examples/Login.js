@@ -19,9 +19,9 @@ import React from "react";
 
 // reactstrap components
 import {
+  Alert,
   Button,
   Card,
-  CardHeader,
   CardBody,
   FormGroup,
   Form,
@@ -29,7 +29,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  Row,
+  UncontrolledTooltip,
   Col
 } from "reactstrap";
 
@@ -38,17 +38,60 @@ class Login extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      loginSuc: false,
+      loginErr: false,
+      loginErrData: '',
+      dangerUsername: '',
+      dangerPassword: ''
     };
   }
 
   login = (event) => {
     let username = this.state.username
     let password = this.state.password
+    let passwordCheck = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=.<>|[\]{}?])[a-zA-Z0-9!@#$%^&*()_+\-=.<>|[\]{}?]{8,}$/
+    let usernameCheck = /^(?=.*[a-z])[a-z0-9.]{1,}$/
    
     event.preventDefault();
 
-    console.log(username, password)
+    if (username === '' || password === '') {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: 'Field cannot be empty!',
+        dangerUsername: 'has-danger',
+        dangerPassword: 'has-danger',
+      })
+    } else if (!usernameCheck.test(username)) {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: 'Invalid username. Allowed characters: a-z, 0-9, ".".',
+        dangerUsername: 'has-danger',
+        dangerPassword: '',
+      })
+    } else if (!passwordCheck.test(password) && password !== 'admin') {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: <>Invalid password. Allowed characters: a-z, A-Z, 0-9 and <strong id="specialCharactersTooltip">special characters</strong>!<UncontrolledTooltip className="tooltip" delay={{ show: 100, hide: 100 }} placement="bottom" target="specialCharactersTooltip" key={"special_characters"}>{"~!@#$%^&*()_+-=.<>|[]{}?"}</UncontrolledTooltip></>,
+        dangerUsername: '',
+        dangerPassword: 'has-danger',
+      })
+    } else {
+      console.log(username, password)
+
+      this.setState({
+        loginSuc: true,
+        loginErr: false,
+        loginErrData: '',
+        dangerUsername: 'has-success',
+        dangerPassword: 'has-success',
+      })
+    }
+
+
   }
 
   onFormSubmit = (e) => {
@@ -72,7 +115,7 @@ class Login extends React.Component {
               </div>
               <Form role="form" onSubmit={this.login}>
                 <FormGroup className="mb-3">
-                  <InputGroup className="input-group-alternative">
+                  <InputGroup className={"input-group-alternative"+this.state.dangerUsername}>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-email-83" />
@@ -81,8 +124,8 @@ class Login extends React.Component {
                     <Input placeholder="User Name" type="username" onChange={(e) => this.setState({ username: e.target.value })} />
                   </InputGroup>
                 </FormGroup>
-                <FormGroup>
-                  <InputGroup className="input-group-alternative">
+                <FormGroup className={this.state.dangerPassword}>
+                  <InputGroup className={"input-group-alternative"+this.state.dangerPassword}>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-lock-circle-open" />
@@ -96,6 +139,8 @@ class Login extends React.Component {
                     Sign in
                   </Button>
                 </div>
+                {this.state.loginErr && <Alert color="danger">{this.state.loginErrData}</Alert>}
+                {this.state.loginSuc && <Alert color="success">Login successful!</Alert>}
               </Form>
             </CardBody>
           </Card>
