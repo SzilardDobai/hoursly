@@ -104,6 +104,25 @@ module.exports = {
     }
     res.send(usr_arr)
   },
+  getProjectInfo: async (req, res) => {
+    let project_id = req.params.projectId
+    let projects = await new Promise(async (resolve, reject) => {
+      try {
+        let sql = `SELECT * FROM projects where project_id = ?`
+        let result = await db.query(sql, project_id)
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    })
+    if (projects === -1) {
+      projects = []
+      console.log('Error retrieving project info.')
+    } else {
+      res.send(projects)
+      console.log(`Succesfully retrieved project info.`)
+    }
+  },
 
   authentication: async (req, res) => {
     // sign in user
@@ -188,23 +207,5 @@ module.exports = {
       }
     }).catch(e => console.log('Error checking username \"' + username + '\".'))
   },
-  getProjectInfo: async (req, res) => {
-    let project_id = req.params.projectId
-    let projects = await new Promise(async (resolve, reject) => {
-      try {
-        let sql = `SELECT * FROM projects where project_id = ?`
-        let result = await db.query(sql, project_id)
-        resolve(result)
-      } catch (error) {
-        return reject(error)
-      }
-    })
-    if (projects === -1) {
-      projects = []
-      console.log('Error retrieving project info.')
-    } else {
-      res.send(projects)
-      console.log(`Succesfully retrieved project info.`)
-    }
-  },
+ 
 }
