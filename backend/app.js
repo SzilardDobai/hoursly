@@ -68,6 +68,7 @@ app.get('/getUsers', services.getUsers);
 app.get('/getRoles', services.getRoles);
 app.get('/getProjects/:userId', services.getProjects);
 app.get('/getUsersFromProject/:projectId', services.getUsersFromProject);
+app.get(`/getProjectInfo/:projectId`, services.getProjectInfo);
 // set the app to listen on the port
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
