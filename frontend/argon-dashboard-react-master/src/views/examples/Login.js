@@ -16,12 +16,13 @@
 
 */
 import React from "react";
+import UserService from '../../services/userServices.js';
 
 // reactstrap components
 import {
+  Alert,
   Button,
   Card,
-  CardHeader,
   CardBody,
   FormGroup,
   Form,
@@ -29,117 +30,150 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  Row,
+  UncontrolledTooltip,
   Col
 } from "reactstrap";
 
 class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+      loginSuc: false,
+      loginErr: false,
+      loginErrData: '',
+      dangerUsername: '',
+      dangerPassword: ''
+    };
+  }
+
+  login = async (event) => {
+    let username = this.state.username
+    let password = this.state.password
+    let passwordCheck = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=.<>|[\]{}?])[a-zA-Z0-9!@#$%^&*()_+\-=.<>|[\]{}?]{8,}$/
+    let usernameCheck = /^(?=.*[a-z])[a-z0-9.]{1,}$/
+
+    const hashCode = function (s) {
+      return s.split("").reduce(function (a, b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
+    }
+
+    const bufferToBase64 = function (buf) {
+      var binstr = Array.prototype.map.call(buf, function (ch) {
+        return String.fromCharCode(ch);
+      }).join('');
+      return btoa(binstr);
+    }
+   
+    event.preventDefault();
+
+    if (username === '' || password === '') {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: 'Field cannot be empty!',
+        dangerUsername: 'has-danger',
+        dangerPassword: 'has-danger',
+      })
+    } else if (!usernameCheck.test(username)) {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: 'Invalid username. Allowed characters: a-z, 0-9, ".".',
+        dangerUsername: 'has-danger',
+        dangerPassword: '',
+      })
+    } else if (!passwordCheck.test(password) && password !== 'admin') {
+      this.setState({
+        loginSuc: false,
+        loginErr: true,
+        loginErrData: <>Invalid password. Allowed characters: a-z, A-Z, 0-9 and <strong id="specialCharactersTooltip">special characters</strong>!<UncontrolledTooltip className="tooltip" delay={{ show: 100, hide: 100 }} placement="bottom" target="specialCharactersTooltip" key={"special_characters"}>{"~!@#$%^&*()_+-=.<>|[]{}?"}</UncontrolledTooltip></>,
+        dangerUsername: '',
+        dangerPassword: 'has-danger',
+      })
+    } else {
+      password = hashCode(password)
+
+      let payload = {
+        username,
+        password
+      }
+
+      const authPromise = UserService.auth(payload).then(result => result)
+      await Promise.all([authPromise]).then(auth => {
+        auth = auth[0]['auth']
+        for (var key in auth) {
+          if (key === 'picture') {
+            if (auth.picture === null)
+              sessionStorage.setItem('picture', null)
+            else
+              sessionStorage.setItem('picture', bufferToBase64(auth.picture.data))
+          }
+          else
+            sessionStorage.setItem(key, auth[key])
+        }
+    
+        this.setState({
+          loginSuc: true,
+          loginErr: false,
+          loginErrData: '',
+          dangerUsername: 'has-success',
+          dangerPassword: 'has-success',
+        })
+      })
+    }
+  }
+
+  onFormSubmit = (e) => {
+    this.login(this.state.username, this.state.password)
+  }
+
   render() {
     return (
       <>
+        <Col>
+          <div >
+            <img src={require("../../assets/img/theme/profile-cover.jpg")} width="75%" alt="generic_user_photo"/>
+            <p></p>
+          </div>
+        </Col>
         <Col lg="5" md="7">
           <Card className="bg-secondary shadow border-0">
-            <CardHeader className="bg-transparent pb-5">
-              <div className="text-muted text-center mt-2 mb-3">
-                <small>Sign in with</small>
-              </div>
-              <div className="btn-wrapper text-center">
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/github.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Github</span>
-                </Button>
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/google.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Google</span>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardBody className="px-lg-5 py-lg-5">
+            <CardBody className="px-lg-5 py-lg-4">
               <div className="text-center text-muted mb-4">
-                <small>Or sign in with credentials</small>
+                <small>Sign in with credentials</small>
               </div>
-              <Form role="form">
+              <Form role="form" onSubmit={this.login}>
                 <FormGroup className="mb-3">
-                  <InputGroup className="input-group-alternative">
+                  <InputGroup className={"input-group-alternative"+this.state.dangerUsername}>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-email-83" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Email" type="email" autoComplete="new-email"/>
+                    <Input placeholder="User Name" type="username" onChange={(e) => this.setState({ username: e.target.value })} />
                   </InputGroup>
                 </FormGroup>
-                <FormGroup>
-                  <InputGroup className="input-group-alternative">
+                <FormGroup className={this.state.dangerPassword}>
+                  <InputGroup className={"input-group-alternative"+this.state.dangerPassword}>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Password" type="password" autoComplete="new-password"/>
+                    <Input placeholder="Password" type="password" onChange={(e) => this.setState({ password: e.target.value })} />
                   </InputGroup>
                 </FormGroup>
-                <div className="custom-control custom-control-alternative custom-checkbox">
-                  <input
-                    className="custom-control-input"
-                    id=" customCheckLogin"
-                    type="checkbox"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor=" customCheckLogin"
-                  >
-                    <span className="text-muted">Remember me</span>
-                  </label>
-                </div>
                 <div className="text-center">
-                  <Button className="my-4" color="primary" type="button">
+                  <Button className="my-4" color="primary" type="submit" >
                     Sign in
                   </Button>
                 </div>
+                {this.state.loginErr && <Alert color="danger">{this.state.loginErrData}</Alert>}
+                {this.state.loginSuc && <Alert color="success">Login successful!</Alert>}
               </Form>
             </CardBody>
           </Card>
-          <Row className="mt-3">
-            <Col xs="6">
-              <a
-                className="text-light"
-                href="#pablo"
-                onClick={e => e.preventDefault()}
-              >
-                <small>Forgot password?</small>
-              </a>
-            </Col>
-            <Col className="text-right" xs="6">
-              <a
-                className="text-light"
-                href="#pablo"
-                onClick={e => e.preventDefault()}
-              >
-                <small>Create new account</small>
-              </a>
-            </Col>
-          </Row>
         </Col>
       </>
     );
