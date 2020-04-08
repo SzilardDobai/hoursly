@@ -65,6 +65,15 @@ app.use(fileUpload()); // configure fileupload
 
 // routes for the app
 app.get('/getUsers', services.getUsers);
+app.get('/getRoles', services.getRoles);
+app.get('/getProjects/:userId', services.getProjects);
+app.get('/getUsersFromProject/:projectId', services.getUsersFromProject);
+app.get(`/getProjectInfo/:projectId`, services.getProjectInfo);
+
+app.post('/auth', services.authentication);
+app.post('/addUser', services.addUser);
+app.post('/deleteUser', services.deleteUser);
+app.post('/checkUsername/:username', services.checkUsername);
 
 // set the app to listen on the port
 app.listen(port, () => {
