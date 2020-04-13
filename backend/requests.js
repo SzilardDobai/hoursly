@@ -207,5 +207,35 @@ module.exports = {
       }
     }).catch(e => console.log('Error checking username \"' + username + '\".'))
   },
+
+  changePassword: async (req, res) => {
+    let userId = req.body.user_id
+    let oldPassword = req.body.old_password
+    let password = req.body.password
+    let oldPasswordCorrect = false, passwordChangedSuccesfully = false
+
+    await query('SELECT password FROM users WHERE user_id=? AND password=?', [userId, oldPassword]).then(result => {
+      if (result.length > 0)
+        oldPasswordCorrect = true
+    })
+
+    if (oldPasswordCorrect) {
+      await query('UPDATE users SET password=? WHERE user_id=?', [password, userId]).then(async () => {
+        user = await query('SELECT username FROM users WHERE user_id=?', [userId])
+        if (user.length > 0) {
+          console.log(`Sucessfully updated password for user ${user[0].username}.`)
+          passwordChangedSuccesfully = true
+        } else {
+          throw "Error updating password for user."
+        }
+      }).catch((e) => {
+        console.log("Error updating password for user " + userId + '.')
+        passwordChangedSuccesfully = false
+      })
+    } else {
+      console.log('Change password error: Old password incorrect.')
+    }
+    res.send([oldPasswordCorrect, passwordChangedSuccesfully])
+  }
  
 }

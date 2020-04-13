@@ -16,7 +16,7 @@
 
 */
 import React from "react";
-import UserService from '../../services/userServices.js';
+import UserService from '../services/userServices.js';
 
 // reactstrap components
 import {
@@ -75,7 +75,7 @@ class Login extends React.Component {
         dangerUsername: 'has-danger',
         dangerPassword: 'has-danger',
       })
-    } else if (!usernameCheck.test(username)) {
+    } else if (!usernameCheck.test(username) && username !== 'admin') {
       this.setState({
         loginSuc: false,
         loginErr: true,
@@ -108,9 +108,14 @@ class Login extends React.Component {
               sessionStorage.setItem('picture', null)
             else
               sessionStorage.setItem('picture', bufferToBase64(auth.picture.data))
-          }
-          else
+          } else if (key === 'role_id') {
+            if(auth.role_id === 1)
+              sessionStorage.setItem('role', 'admin')
+            else
+              sessionStorage.setItem('role', 'user')
+          } else {
             sessionStorage.setItem(key, auth[key])
+          }
         }
     
         this.setState({
@@ -120,6 +125,8 @@ class Login extends React.Component {
           dangerUsername: 'has-success',
           dangerPassword: 'has-success',
         })
+
+        setTimeout(() => { this.props.history.push("/user/dashboard") }, 1000)
       })
     }
   }
@@ -133,7 +140,7 @@ class Login extends React.Component {
       <>
         <Col>
           <div >
-            <img src={require("../../assets/img/theme/profile-cover.jpg")} width="75%" alt="generic_user_photo"/>
+            <img src={require("../assets/img/theme/profile-cover.jpg")} width="75%" alt="generic_user_photo"/>
             <p></p>
           </div>
         </Col>

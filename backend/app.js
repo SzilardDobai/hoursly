@@ -74,6 +74,7 @@ app.post('/auth', services.authentication);
 app.post('/addUser', services.addUser);
 app.post('/deleteUser', services.deleteUser);
 app.post('/checkUsername/:username', services.checkUsername);
+app.post('/changePassword', services.changePassword);
 
 // set the app to listen on the port
 app.listen(port, () => {

@@ -63,6 +63,12 @@ const UserService = {
                 })
         })
     },
+
+    changePassword: async (payload) => {
+        let res1 = await axios.post(`${server}changePassword`, payload)
+        let res2 = await res1
+        return res2.data
+    }
 }
 
 export default UserService
