@@ -75,7 +75,7 @@ class Login extends React.Component {
         dangerUsername: 'has-danger',
         dangerPassword: 'has-danger',
       })
-    } else if (!usernameCheck.test(username)) {
+    } else if (!usernameCheck.test(username) && username !== 'admin') {
       this.setState({
         loginSuc: false,
         loginErr: true,
@@ -108,9 +108,14 @@ class Login extends React.Component {
               sessionStorage.setItem('picture', null)
             else
               sessionStorage.setItem('picture', bufferToBase64(auth.picture.data))
-          }
-          else
+          } else if (key === 'role_id') {
+            if(auth.role_id === 1)
+              sessionStorage.setItem('role', 'admin')
+            else
+              sessionStorage.setItem('role', 'user')
+          } else {
             sessionStorage.setItem(key, auth[key])
+          }
         }
     
         this.setState({
@@ -120,6 +125,8 @@ class Login extends React.Component {
           dangerUsername: 'has-success',
           dangerPassword: 'has-success',
         })
+
+        setTimeout(() => { this.props.history.push("/user/dashboard") }, 1000)
       })
     }
   }
