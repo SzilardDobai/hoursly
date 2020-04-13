@@ -1,7 +1,7 @@
 /*!
 
 =========================================================
-* Argon Dashboard React - v1.1.0
+* Argon Dashboard React - v1.0.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/argon-dashboard-react
@@ -18,9 +18,28 @@
 import React from "react";
 
 // reactstrap components
-import { Button, Container, Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
+
 
 class UserHeader extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      imgComp: (sessionStorage.getItem('picture') === 'null' || sessionStorage.getItem('picture') === null || sessionStorage.getItem('picture') === '') ? (
+        <img
+          alt="..."
+          className="rounded-circle"
+          src={require('../../assets/img/generic_profile_picture.jpeg')}
+        />
+      ) : (<img
+        alt="..."
+        className="rounded-circle"
+        src={`data:image/jpeg;base64,${sessionStorage.getItem('picture')}`}
+      />),
+    }
+  }
+
   render() {
     return (
       <>
@@ -28,30 +47,32 @@ class UserHeader extends React.Component {
           className="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
           style={{
             minHeight: "600px",
-            backgroundImage:
-              "url(" + require("assets/img/theme/profile-cover.jpg") + ")",
             backgroundSize: "cover",
             backgroundPosition: "center top"
           }}
         >
           {/* Mask */}
-          <span className="mask bg-gradient-default opacity-8" />
+          <span className="mask bg-gradient-info opacity-10" />
           {/* Header container */}
           <Container className="d-flex align-items-center" fluid>
             <Row>
-              <Col lg="7" md="10">
-                <h1 className="display-2 text-white">Hello Jesse</h1>
-                <p className="text-white mt-0 mb-5">
-                  This is your profile page. You can see the progress you've
-                  made with your work and manage your projects or assigned tasks
-                </p>
-                <Button
-                  color="info"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  Edit profile
-                </Button>
+              <Col lg="9" md="10">
+                <h1 className="display-2 text-white">Hello, {sessionStorage.getItem('first_name')[0].toUpperCase() + sessionStorage.getItem('first_name').slice(1)}!</h1>
+                { sessionStorage.getItem('role') === 'user' ? 
+                    <p className="text-white mt-0 mb-5">
+                      This is your profile page. Here you can track your currently assigned projects, as well as update your user information.
+                    </p> 
+                  :
+                    <p className="text-white mt-0 mb-5">
+                      This is your profile page. Here you can keep track of all active and inactive projects.
+                    </p> 
+                }
+              </Col>
+              <Col>
+                <br /><br />
+                <div className="card-profile-image">
+                  {this.state.imgComp}
+                </div>
               </Col>
             </Row>
           </Container>

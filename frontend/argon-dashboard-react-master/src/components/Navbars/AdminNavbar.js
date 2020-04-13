@@ -1,7 +1,7 @@
 /*!
 
 =========================================================
-* Argon Dashboard React - v1.1.0
+* Argon Dashboard React - v1.0.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/argon-dashboard-react
@@ -23,12 +23,6 @@ import {
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  Form,
-  FormGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  InputGroup,
   Navbar,
   Nav,
   Container,
@@ -36,6 +30,24 @@ import {
 } from "reactstrap";
 
 class AdminNavbar extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      imgComp: (sessionStorage.getItem('picture') === 'null' || sessionStorage.getItem('picture') === null || sessionStorage.getItem('picture') === '') ? (
+        <img
+          alt="..."
+          className="rounded-circle"
+          src={require('../../assets/img/generic_profile_picture.jpeg')}
+        />
+      ) : (<img
+        alt="..."
+        className="rounded-circle"
+        src={`data:image/jpeg;base64,${sessionStorage.getItem('picture')}`}
+      />)
+    }
+  }
+
   render() {
     return (
       <>
@@ -43,35 +55,22 @@ class AdminNavbar extends React.Component {
           <Container fluid>
             <Link
               className="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block"
-              to="/"
+              to={this.props.location.pathname}
             >
               {this.props.brandText}
             </Link>
-            <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-              <FormGroup className="mb-0">
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="fas fa-search" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input placeholder="Search" type="text" />
-                </InputGroup>
-              </FormGroup>
-            </Form>
             <Nav className="align-items-center d-none d-md-flex" navbar>
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
                   <Media className="align-items-center">
                     <span className="avatar avatar-sm rounded-circle">
-                      <img
-                        alt="..."
-                        src={require("assets/img/theme/team-4-800x800.jpg")}
-                      />
+                      {this.state.imgComp}
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        Jessica Jones
+                        {sessionStorage.getItem('first_name')[0].toUpperCase() + sessionStorage.getItem('first_name').slice(1)}
+                        {' '}
+                        {sessionStorage.getItem('last_name')[0].toUpperCase() + sessionStorage.getItem('last_name').slice(1)}
                       </span>
                     </Media>
                   </Media>
@@ -80,24 +79,12 @@ class AdminNavbar extends React.Component {
                   <DropdownItem className="noti-title" header tag="div">
                     <h6 className="text-overflow m-0">Welcome!</h6>
                   </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
-                    <i className="ni ni-single-02" />
-                    <span>My profile</span>
-                  </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
-                    <i className="ni ni-settings-gear-65" />
-                    <span>Settings</span>
-                  </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
-                    <i className="ni ni-calendar-grid-58" />
-                    <span>Activity</span>
-                  </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
-                    <i className="ni ni-support-16" />
-                    <span>Support</span>
+                  <DropdownItem to="/user/dashboard" tag={Link}>
+                    <i className="ni ni-circle-08" />
+                    <span>Dashboard</span>
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
+                  <DropdownItem to="/auth/login" tag={Link}>
                     <i className="ni ni-user-run" />
                     <span>Logout</span>
                   </DropdownItem>

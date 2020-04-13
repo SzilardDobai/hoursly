@@ -26,7 +26,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
 
-class Admin extends React.Component {
+class User extends React.Component {
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -34,7 +34,7 @@ class Admin extends React.Component {
   }
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/user") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -64,9 +64,10 @@ class Admin extends React.Component {
       <>
         <Sidebar
           {...this.props}
+          role={sessionStorage.getItem('role')}
           routes={routes}
           logo={{
-            innerLink: "/admin/index",
+            innerLink: "/user/dashboard",
             imgSrc: require("assets/img/brand/hoursly.png"),
             imgAlt: "..."
           }}
@@ -78,7 +79,7 @@ class Admin extends React.Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Redirect from="*" to="/admin/index" />
+            {/* <Redirect from="*" to="/admin/index" /> */}
           </Switch>
           <Container fluid>
             <AdminFooter />
@@ -89,4 +90,4 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+export default User;

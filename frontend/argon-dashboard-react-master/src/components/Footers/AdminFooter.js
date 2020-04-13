@@ -1,7 +1,7 @@
 /*!
 
 =========================================================
-* Argon Dashboard React - v1.1.0
+* Argon Dashboard React - v1.0.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/argon-dashboard-react
@@ -19,7 +19,7 @@
 import React from "react";
 
 // reactstrap components
-import { Container, Row, Col, Nav, NavItem, NavLink } from "reactstrap";
+import { Row, Col, Nav, NavItem, NavLink } from "reactstrap";
 
 class Footer extends React.Component {
   render() {
@@ -27,16 +27,22 @@ class Footer extends React.Component {
       <footer className="footer">
         <Row className="align-items-center justify-content-xl-between">
           <Col xl="6">
-            <div className="copyright text-center text-xl-left text-muted">
-              © 2018{" "}
+            <div className="copyright text-left text-x1-left text-muted">
+              © 2020{" "}
               <a
                 className="font-weight-bold ml-1"
-                href="https://www.creative-tim.com?ref=adr-admin-footer"
-                rel="noopener noreferrer"
+                href="https://www.creative-tim.com?ref=adr-auth-footer"
                 target="_blank"
               >
                 Creative Tim
               </a>
+              <a
+                href="https://www.instagram.com/szilard.dobai"
+              > | Szilárd Andrei DOBAI </a>
+              &
+              <a
+                href="https://www.instagram.com/dragomir.alex98/"
+              > Alexandru Dacian DRAGOMIR</a>
             </div>
           </Col>
 

@@ -1,0 +1,9 @@
+.tooltip-inner-text {
+    font-size: 15px;
+    color: #ffffff;
+    text-align: left;
+  }
+
+.tooltip {
+    width: auto;
+}
