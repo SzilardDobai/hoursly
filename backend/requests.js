@@ -123,6 +123,22 @@ module.exports = {
       console.log(`Succesfully retrieved project info.`)
     }
   },
+  getUserInfo: async (req, res) => {
+    let user_id = req.params.userId
+    await query('SELECT * FROM users WHERE user_id=?', [user_id]).then(result => {
+      if (result.length > 0) {
+        res.send(result[0])
+        console.log(`Succesfully retrieved user info for user ${user_id}.`)
+      } else {
+        res.send('')
+        console.log(`Error retrieving user info for user ${user_id}.`)
+      }
+    }).catch(e => {
+      res.send('')
+      console.log(`Error retrieving user info for user ${user_id}.`)
+    })
+  },
+
 
   authentication: async (req, res) => {
     // sign in user
