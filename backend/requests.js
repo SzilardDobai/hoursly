@@ -138,7 +138,30 @@ module.exports = {
       console.log(`Error retrieving user info for user ${user_id}.`)
     })
   },
-
+  getAllUserRecords: async (req, res) => {
+    let userName = req.params.userName
+    let userRecords = await new Promise(async (resolve, reject) => {
+      try {
+        let sql
+        if (userName === 'admin')
+          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE hours is not null ORDER BY year, week DESC`
+        else
+          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE user_name = "${userName}" AND hours is not null ORDER BY year, week DESC`
+        let result = await db.query(sql)
+        // console.log(result)
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    })
+    if (userRecords === -1) {
+      userRecords = []
+      console.log('Error retrieving all user records.')
+    } else {
+      res.send(userRecords)
+      console.log(`Succesfully retrieved all user records.`)
+    }
+  },
 
   authentication: async (req, res) => {
     // sign in user
