@@ -23,8 +23,38 @@ const UserService = {
         })
     },
 
+    getRoles: () => {
+        return new Promise(function (resolve, reject) {
+            axios.get(server + 'getRoles', {
+            })
+                .then(res => {
+                    return resolve(res.data)
+                })
+        })
+    },  
+    
+    getUserRole: (id) => {
+        return new Promise(function (resolve, reject) {
+            axios.get(`${server}getUserRole/${id}`, {
+            })
+                .then(res => {
+                    return resolve(res.data)
+                })
+        })
+    },
+
+    getUserInfo: (id) => {
+        return new Promise(function (resolve, reject) {
+            axios.get(`${server}getUserInfo/${id}`, {
+            })
+                .then(res => {
+                    return resolve(res.data)
+                })
+        })
+    },
+
     addUser: async (row) => {
-        let username = row.first_name.toLowerCase().split(/[- ]/)[0] + '.' + row.last_name.toLowerCase().split(/[- ]/)[0];
+        let username = row.firstName.toLowerCase().split(/[- ]/)[0] + '.' + row.lastName.toLowerCase().split(/[- ]/)[0];
         let usernameExists
         let usernameExists2 = false
         let contor = 2
@@ -44,8 +74,8 @@ const UserService = {
         return new Promise(function (resolve, reject) {
             axios.post(`${server}addUser`, {
                 username: username,
-                first_name: row.first_name.toLowerCase(),
-                last_name: row.last_name.toLowerCase(),
+                first_name: row.firstName.toLowerCase(),
+                last_name: row.lastName.toLowerCase(),
                 department: row.department.toLowerCase(),
                 position: row.position.toLowerCase()
             })
@@ -66,6 +96,30 @@ const UserService = {
 
     changePassword: async (payload) => {
         let res1 = await axios.post(`${server}changePassword`, payload)
+        let res2 = await res1
+        return res2.data
+    },
+
+    updateUserInfo: async (payload) => {
+        let res1 = await axios.post(`${server}updateUserInfo`, payload)
+        let res2 = await res1
+        return res2.data
+    },
+
+    updateUserRole: async (payload) => {
+        let res1 = await axios.post(`${server}updateUserRole`, payload)
+        let res2 = await res1
+        return res2.data
+    },
+
+    addUserProjectLink: async (payload) => {
+        let res1 = await axios.post(`${server}addUserProjectLink`, payload)
+        let res2 = await res1
+        return res2.data
+    },
+
+    deleteUserProjectLink: async (payload) => {
+        let res1 = await axios.post(`${server}deleteUserProjectLink`, payload)
         let res2 = await res1
         return res2.data
     }

@@ -37,14 +37,14 @@ const hashCode = function (s) {
 module.exports = {
   getUsers: async (req, res) => {
     // get all users from the database
-    let users = await query('SELECT * FROM users',[])
+    let users = await query('SELECT user_id, username, first_name, last_name, position, department, picture FROM users',[])
     
     if (users === -1) {
       users = []
       console.log('Error retrieving users.')
     } else {
       res.send(users)
-      console.log(`Succesfully retrieved all users.`)
+      console.log(`Successfully retrieved all users.`)
     }
   },
 
@@ -57,8 +57,24 @@ module.exports = {
       console.log('Error retrieving roles.')
     } else {
       res.send(roles)
-      console.log(`Succesfully retrieved all roles.`)
+      console.log(`Successfully retrieved all roles.`)
     }
+  },
+
+  getUserRole: async (req, res) => {
+    // get role of given user_id from database
+    let user_id = req.params.userId
+    let role_id = await query(`SELECT role_id FROM user_role_link WHERE user_id = ?`, [user_id])
+    let role = []
+
+    if (role_id === -1) {
+      console.log('Error retrieving role id.')
+    } else {
+      role = await query('SELECT * FROM roles WHERE role_id = ?', [role_id[0].role_id])
+      role = role[0]
+      console.log(`Successfully retrieved user's role.`)
+    }
+    res.send(role)
   },
 
   getProjects: async (req, res) => {
@@ -78,7 +94,7 @@ module.exports = {
           prj_arr.push(prj[0])
       }
 
-      console.log(`Succesfully retrieved all projects.`)
+      console.log(`Successfully retrieved all projects.`)
     }
     res.send(prj_arr)
   },
@@ -100,11 +116,13 @@ module.exports = {
           usr_arr.push(prj[0])
       }
 
-      console.log(`Succesfully retrieved all users.`)
+      console.log(`Successfully retrieved all users.`)
     }
     res.send(usr_arr)
   },
+
   getProjectInfo: async (req, res) => {
+    // get project_id's info
     let project_id = req.params.projectId
     let projects = await new Promise(async (resolve, reject) => {
       try {
@@ -120,7 +138,7 @@ module.exports = {
       console.log('Error retrieving project info.')
     } else {
       res.send(projects)
-      console.log(`Succesfully retrieved project info.`)
+      console.log(`Successfully retrieved project info.`)
     }
   },
   getUserInfo: async (req, res) => {
@@ -163,6 +181,104 @@ module.exports = {
     }
   },
 
+  getUserInfo: async (req, res) => {
+    // get user_id's info
+    let user_id = req.params.userId
+    await query('SELECT * FROM users WHERE user_id=?', [user_id]).then(result => {
+      if (result.length > 0) {
+        res.send(result[0])
+        console.log(`Successfully retrieved user info for user ${user_id}.`)
+      } else {
+        res.send('')
+        console.log(`Error retrieving user info for user ${user_id}.`)
+      }
+    }).catch(e => {
+      res.send('')
+      console.log(`Error retrieving user info for user ${user_id}.`)
+    })
+  },
+
+  updateUserInfo: async (req, res) => {
+    // update user_id's info
+    let user_id = req.body.userId
+    let first_name = req.body.firstName
+    let last_name = req.body.lastName
+    let department = req.body.department
+    let position = req.body.position
+
+    await query('UPDATE users SET first_name=?, last_name=?, department=?, position=? WHERE user_id=?', [first_name, last_name, department, position, user_id]).then(async result => {
+      res.send(true)
+      console.log('Successfully updated info for user ' + user_id + '.')
+    }).catch(e => {
+      res.send(false)
+      console.log('Error updating info for user ' + user_id + '.')
+    })
+  },
+
+  updateUserRole: async (req, res) => {
+    // update user_id's role
+    let user_id = req.body.userId
+    let role_id = req.body.roleId
+
+    await query('SELECT * FROM user_role_link WHERE user_id=? AND role_id=?', [user_id, role_id]).then(async result => {
+      if (result.length == 0) {
+        await query('UPDATE user_role_link SET role_id=? WHERE user_id=?', [role_id, user_id]).then(async result => {
+          if (result.changedRows === 0 && result.affectedRows === 0)
+            await query(`INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)`, [user_id, role_id]).then(result => result).catch(e => { console.log(e,'Error adding role.') })
+          res.send(true)
+          console.log('Successfully updated role for user ' + user_id + '.')
+        }).catch(e => {
+          res.send(false)
+          console.log('Error updating role for user ' + user_id + '.')
+        })
+      } else {
+        res.send(true)
+      }
+    })
+    
+  },
+
+  addUserProjectLink: async (req, res) => {
+    let userId = req.body.userId
+    let projectId = req.body.projectId
+    await new Promise(async (resolve, reject) => {
+      try {
+        let sql = `INSERT INTO user_project_link (user_id, project_id) VALUES (?,?)`
+        let result = await db.query(sql, [userId, projectId])
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    }).then(() => {
+      console.log(`Successfully added user ${userId} to project ${projectId}.`)
+    })
+      .catch(() => {
+        console.log(`Error adding user ${userId} to project ${projectId}.`)
+      })
+
+    res.send()
+  },
+
+  deleteUserProjectLink: async (req, res) => {
+    let userId = req.body.userId
+    let projectId = req.body.projectId
+    await new Promise(async (resolve, reject) => {
+      try {
+        let sql = `DELETE FROM user_project_link WHERE project_id=${projectId} AND user_id=${userId};`
+        let result = await db.query(sql)
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    }).then(() => {
+      console.log(`Successfully removed user ${userId} from project ${projectId}.`)
+    })
+      .catch(() => {
+        console.log(`Error removing user ${userId} from project ${projectId}.`)
+      })
+    res.send()
+  },
+
   authentication: async (req, res) => {
     // sign in user
     let username = req.body.username;
@@ -198,13 +314,16 @@ module.exports = {
   addUser: async (req, res) => {
     // adds a new user to database
     generatedPassword = generatePassword()
+    let newUserId
 
     await query('INSERT INTO users (username, password, first_name, last_name, department, position) VALUES (?,?,?,?,?,?)', [req.body.username, hashCode(generatedPassword), req.body.first_name, req.body.last_name, req.body.department, req.body.position]
     ).then(async (result) => {
       console.log(`Sucessfully added user ${req.body.username}.`)
-      await query('INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)', [result.insertId, 2]
+      newUserId = result.insertId
+      await query('INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)', [newUserId, 2]
       ).then(() => {
         console.log(`Sucessfully added role 'user' to user ${req.body.username}.`)
+        res.send({userId: newUserId})
       }).catch((e) => {
         console.log(`Error adding role 'user' to user ${req.body.username}.`)
       })
@@ -251,7 +370,7 @@ module.exports = {
     let userId = req.body.user_id
     let oldPassword = req.body.old_password
     let password = req.body.password
-    let oldPasswordCorrect = false, passwordChangedSuccesfully = false
+    let oldPasswordCorrect = false, passwordChangedSuccessfully = false
 
     await query('SELECT password FROM users WHERE user_id=? AND password=?', [userId, oldPassword]).then(result => {
       if (result.length > 0)
@@ -263,18 +382,18 @@ module.exports = {
         user = await query('SELECT username FROM users WHERE user_id=?', [userId])
         if (user.length > 0) {
           console.log(`Sucessfully updated password for user ${user[0].username}.`)
-          passwordChangedSuccesfully = true
+          passwordChangedSuccessfully = true
         } else {
           throw "Error updating password for user."
         }
       }).catch((e) => {
         console.log("Error updating password for user " + userId + '.')
-        passwordChangedSuccesfully = false
+        passwordChangedSuccessfully = false
       })
     } else {
       console.log('Change password error: Old password incorrect.')
     }
-    res.send([oldPasswordCorrect, passwordChangedSuccesfully])
+    res.send([oldPasswordCorrect, passwordChangedSuccessfully])
   }
  
 }

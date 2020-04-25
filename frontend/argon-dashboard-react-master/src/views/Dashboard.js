@@ -202,7 +202,6 @@ class Profile extends React.Component {
       changeErrData: '',
       changeErr: false,
       changeSuc: false,
-      changeErrData: '',
       dangerOldPassword: '',
       dangerNewPassword1: '',
       dangerNewPassword2: ''
@@ -403,7 +402,7 @@ class Profile extends React.Component {
           </div>
           <div className="px-lg-5 py-lg-4">
             <Form role="form" onSubmit={this.changePassword}>
-              <FormGroup className="mb-3" className={this.state.dangerOldPassword}>
+              <FormGroup className={`mb-3 ${this.state.dangerOldPassword}`}>
                 <InputGroup className={"input-group-alternative" + this.state.dangerOldPassword}>
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>

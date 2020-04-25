@@ -16,12 +16,8 @@
 
 */
 import Dashboard from "views/Dashboard.js";
-import Profile from "views/examples/Profile.js";
-import Maps from "views/examples/Maps.js";
-import Register from "views/examples/Register.js";
 import Login from "views/Login.js";
-import Tables from "views/examples/Tables.js";
-import Icons from "views/examples/Icons.js";
+import Users from "views/Users.js";
 
 var routes = [
   {
@@ -39,6 +35,14 @@ var routes = [
     component: Login,
     layout: "/auth",
     role: []
+  },
+  {
+    path: "/users",
+    name: "Users",
+    icon: "ni ni-single-02 text-primary",
+    component: Users,
+    layout: "/user",
+    role: ['admin']
   }
 ];
 export default routes;
