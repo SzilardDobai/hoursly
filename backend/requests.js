@@ -278,6 +278,29 @@ module.exports = {
       })
     res.send()
   },
+  getUserRecordsWithoutHours: async (req, res) => {
+    let userName = req.params.userName
+    let userRecords = await new Promise(async (resolve, reject) => {
+      try {
+        let sql
+        if (userName === 'admin')
+          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours, rh.record_id as record_id FROM recorded_hours rh WHERE hours is null ORDER BY year, week DESC`
+        else
+          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours, rh.record_id as record_id FROM recorded_hours rh WHERE user_name = "${userName}" AND hours is null ORDER BY year, week DESC`
+        let result = await db.query(sql)
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    })
+    if (userRecords === -1) {
+      userRecords = []
+      console.log('Error retrieving all user records without hours.')
+    } else {
+      res.send(userRecords)
+      console.log(`Succesfully retrieved all user records without hours.`)
+    }
+  },
 
   authentication: async (req, res) => {
     // sign in user
