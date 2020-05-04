@@ -390,6 +390,7 @@ module.exports = {
   },
 
   changePassword: async (req, res) => {
+    // change user_id's password
     let userId = req.body.user_id
     let oldPassword = req.body.old_password
     let password = req.body.password
@@ -417,6 +418,64 @@ module.exports = {
       console.log('Change password error: Old password incorrect.')
     }
     res.send([oldPasswordCorrect, passwordChangedSuccessfully])
-  }
+  },
+
+  updateProjectInfo: async (req, res) => {
+    // update project_id's info
+    let project_id = req.body.projectId
+    let project_name = req.body.projectName
+    let project_details = req.body.projectDetails
+    let client = req.body.client
+    let isactive = req.body.isActive
+
+    await query('UPDATE projects SET project_name=?, project_details=?, client=?, isactive=? WHERE project_id=?', [project_name, project_details, client, isactive, project_id]).then(result => {
+      res.send(true)
+      console.log('Successfully updated info for project ' + project_id + '.')
+    }).catch(e => {
+      res.send(false)
+      console.log('Error updating info for project ' + project_id + '.')
+    })
+  },
+
+  addProject: async (req, res) => {
+    // add a new project to database
+    let newProjectId
+    console.log(req.body)
+
+    await query('INSERT INTO projects (project_name, project_details, client, isactive) VALUES (?,?,?,?)', [req.body.projectName, req.body.projectDetails, req.body.client, req.body.isActive]
+    ).then(async (result) => {
+      console.log(`Sucessfully added project ${req.body.projectName}.`)
+      newProjectId = result.insertId
+      await query('INSERT INTO user_project_link (user_id, project_id) VALUES (?,?)', [1, result.insertId]
+      ).then(() => {
+        console.log(`Sucessfully added user 'admin' to project ${req.body.projectName}.`)
+        res.send({projectId: newProjectId})
+      }).catch((e) => {
+        console.log(`Error adding user 'admin' to project ${req.body.projectName}.`)
+      })
+    }).catch((e) => {
+      console.log(`Error adding project ${req.body.projectName}.`)
+    })
+
+    res.send()
+  },
+
+  deleteProjects: async (req, res) => {
+    // delete project from database by project_id (can be array)
+    let idsList = req.body.idsList
+    if (idsList) {
+      if (idsList.length > 0) {
+        idsList.forEach(async id => {
+          await query(`DELETE FROM projects WHERE project_id=?`, [id]).then(() => {
+            console.log(`Sucessfully deleted project ${id}.`)
+          }).catch(() => {
+            console.log(`Error deleting project ${id}.`)
+          })
+        })
+      }
+    }
+    res.send()
+  },
+
  
 }
