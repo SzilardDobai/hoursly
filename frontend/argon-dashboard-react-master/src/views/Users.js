@@ -2,9 +2,7 @@ import React from "react";
 import UserService from '../services/userServices.js';
 import ProjectService from "../services/projectServices.js";
 import Header from "../components/Headers/Header.js";
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import CustomTable from "../components/Other/CustomTable";
 
 import {
     Alert,
@@ -14,8 +12,7 @@ import {
     Input,
     Col,
     Row,
-    Form,
-    Spinner
+    Form
 } from "reactstrap";
 
 import Select from 'react-select'
@@ -46,21 +43,23 @@ const pictureFormatter = cell => {
     />))
 }
 
-const { SearchBar, ClearSearchButton } = Search;
-
 class Users extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             modal: { active: false, title: '' },
-            profilePicture: '',
-            currentUser: '',
-            currentUsername: '',
-            currentFirstName: '',
-            currentLastName: '',
-            currentDepartment: '',
-            currentPosition: '',
-            currentRole: {},
+            currentUser: {
+                profilePicture: '',
+                user: '',
+                username: '',
+                userId: '',
+                firstName: '',
+                lastName: '',
+                department: '',
+                position: '',
+                role: {},
+                projects: [],
+            },
             dangerFirstName: '',
             dangerLastName: '',
             dangerPosition: '',
@@ -70,32 +69,8 @@ class Users extends React.Component {
             changeErrData: '',
             rolesArr: [],
             projectsArr: [],
-            currentProjects: [],
             users: []
         };
-    }
-
-    selectRowProps = {
-        mode: 'checkbox',
-        clickToSelect: true,
-        bgColor: '#64fccc',
-        headerColumnStyle: {backgroundColor: 'white'},
-        nonSelectable: [1]
-    }
-
-    NoDataIndication = () => (
-        <div align={'center'}>
-            <Spinner animation="border" role="status">
-                {'Loading...'}
-            </Spinner>
-        </div>
-    );
-
-    rowEvents = {
-        onDoubleClick: (e, row, rowIndex) => {
-            if (rowIndex !== 0)
-                this.triggerModal(row)
-        }
     }
 
     columns = [{
@@ -107,7 +82,7 @@ class Users extends React.Component {
         headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
     }, {
         dataField: 'username',
-        text: 'username',
+        text: 'Username',
         sort: true,
         headerAlign: 'center',
         headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
@@ -178,16 +153,18 @@ class Users extends React.Component {
             })
 
             this.setState({
-                profilePicture: '',
-                currentUser: '',
-                currentUsername: '',
-                currentFirstName: '',
-                currentLastName: '',
-                currentDepartment: '',
-                currentPosition: '',
-                currentRole: '',
-                currentProjects: [],
-                currentUserId: '',
+                currentUser: {
+                    profilePicture: '',
+                    user: '',
+                    username: '',
+                    userId: '',
+                    firstName: '',
+                    lastName: '',
+                    department: '',
+                    position: '',
+                    role: {},
+                    projects: [],
+                },
                 dangerFirstName: '',
                 dangerLastName: '',
                 dangerPosition: '',
@@ -241,28 +218,30 @@ class Users extends React.Component {
             })
 
             this.setState({
-                profilePicture: (row.picture === 'null' || row.picture === null || row.picture === '') ? (
-                    <img
+                currentUser: {
+                    profilePicture: (row.picture === 'null' || row.picture === null || row.picture === '') ? (
+                        <img
+                            alt="..."
+                            height="200rem"
+                            className="rounded-circle"
+                            src={require('../assets/img/generic_profile_picture.jpeg')}
+                        />
+                    ) : (<img
                         alt="..."
                         height="200rem"
                         className="rounded-circle"
-                        src={require('../assets/img/generic_profile_picture.jpeg')}
-                    />
-                ) : (<img
-                    alt="..."
-                    height="200rem"
-                    className="rounded-circle"
-                    src={`data:image/jpeg;base64,${bufferToBase64(row.picture.data)}`}
-                />),
-                currentUser: row.first_name[0].toUpperCase() + row.first_name.slice(1) + ' ' + row.last_name[0].toUpperCase() + row.last_name.slice(1),
-                currentDepartment: row.department,
-                currentPosition: row.position,
-                currentFirstName: row.first_name,
-                currentLastName: row.last_name,
-                currentUsername: row.username,
-                currentRole: currentRole,
-                currentProjects: currentProjectsArr,
-                currentUserId: row.user_id,
+                        src={`data:image/jpeg;base64,${bufferToBase64(row.picture.data)}`}
+                    />),
+                    user: row.first_name[0].toUpperCase() + row.first_name.slice(1) + ' ' + row.last_name[0].toUpperCase() + row.last_name.slice(1),
+                    username: row.username,
+                    userId: row.user_id,
+                    firstName: row.first_name,
+                    lastName: row.last_name,
+                    department: row.department,
+                    position: row.position,
+                    role: currentRole,
+                    projects: currentProjectsArr,
+                },
                 dangerFirstName: '',
                 dangerLastName: '',
                 dangerPosition: '',
@@ -285,60 +264,61 @@ class Users extends React.Component {
     };
 
     saveChanges = async (event) => {
-        let check = /^(?=.*[a-z])[a-zA-Z0-9.\- ]{1,}$/
+        let nameCheck = /^(?=.*[a-zA-Z])[a-zA-Z\- ]{1,}$/
+        let miscCheck = /^(?=.*[a-zA-Z])[a-zA-Z0-9.\-_ ]{1,}$/
         let good = true
         let payload
 
         event.preventDefault()
 
-        if (!check.test(this.state.currentFirstName)) {
+        if (!nameCheck.test(this.state.currentUser.firstName)) {
             good = good && false
             this.setState({
                 changeSuc: false,
                 changeErr: true,
-                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-".',
+                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, "-", " ".',
                 dangerFirstName: 'has-danger'
             })
         }
-        if (!check.test(this.state.currentLastName)) {
+        if (!nameCheck.test(this.state.currentUser.lastName)) {
             good = good && false
             this.setState({
                 changeSuc: false,
                 changeErr: true,
-                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-".',
+                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, "-", " ".',
                 dangerLastName: 'has-danger'
             })
         }
-        if (!check.test(this.state.currentPosition)) {
+        if (!miscCheck.test(this.state.currentUser.position)) {
             good = good && false
             this.setState({
                 changeSuc: false,
                 changeErr: true,
-                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-".',
+                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-", "_", " ".',
                 dangerPosition: 'has-danger'
             })
         }
-        if (!check.test(this.state.currentDepartment)) {
+        if (!miscCheck.test(this.state.currentUser.department)) {
             good = good && false
             this.setState({
                 changeSuc: false,
                 changeErr: true,
-                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-".',
+                changeErrData: 'Invalid characters. Accepted characters: a-z, A-Z, 0-9, ".", "-", "_", " ".',
                 dangerDepartment: 'has-danger'
             })
         }
 
         if (good) {
             payload = {
-                userId: this.state.currentUserId,
-                username: this.state.currentUsername,
-                firstName: this.state.currentFirstName,
-                lastName: this.state.currentLastName,
-                position: this.state.currentPosition,
-                department: this.state.currentDepartment
+                userId: this.state.currentUser.userId,
+                username: this.state.currentUser.username,
+                firstName: this.state.currentUser.firstName,
+                lastName: this.state.currentUser.lastName,
+                position: this.state.currentUser.position,
+                department: this.state.currentUser.department
             }
             if (this.state.modal.title === 'Change User Info') {
-                await UserService.getUserInfo(this.state.currentUserId).then(async result => {
+                await UserService.getUserInfo(payload.userId).then(async result => {
                     if (payload.firstName !== result.first_name || payload.lastName !== result.last_name || payload.position !== result.position || payload.department !== result.department) {
                         await UserService.updateUserInfo(payload).then(async result => {
                             if (result) {
@@ -378,14 +358,24 @@ class Users extends React.Component {
                 })
             } else {
                 await UserService.addUser(payload).then(res => {
-                    this.setState({ currentUserId: res.userId })
+                    this.setState({ currentUser: {...this.state.currentUser, userId: res.userId}})
+                }).catch(e => {
+                    this.setState({
+                        changeSuc: false,
+                        changeErr: true,
+                        changeErrData: 'Error adding user.',
+                        dangerDepartment: 'has-danger',
+                        dangerPosition: 'has-danger',
+                        dangerFirstName: 'has-danger',
+                        dangerLastName: 'has-danger',
+                    })
                 })
             }
         }
 
         payload = {
-            userId: this.state.currentUserId,
-            roleId: this.state.currentRole.value
+            userId: this.state.currentUser.userId,
+            roleId: this.state.currentUser.role.value
         }
 
         if (this.state.modal.title === 'Change User Info') {
@@ -404,12 +394,10 @@ class Users extends React.Component {
             })
         }
 
-        await ProjectService.getProjects(this.state.currentUserId).then(async result => {
+        await ProjectService.getProjects(payload.userId).then(async result => {
             let dbProjects = [], prjDel = [], prjAdd = []
-            if (this.state.currentProjects === null)
-                this.setState({
-                    currentProjects: []
-                })
+            if (this.state.currentUser.projects === null)
+                this.setState({ currentUser: {...this.state.currentUser, projects: []}})
 
             // get all projects from db linked to current user
             if (result.length > 0) {
@@ -426,14 +414,14 @@ class Users extends React.Component {
             if (dbProjects.length > 0)
                 dbProjects.forEach(r => {
                     let found
-                    found = this.state.currentProjects.some(el => (el.value === r.value && el.label === r.label))
+                    found = this.state.currentUser.projects.some(el => (el.value === r.value && el.label === r.label))
                     if (!found)
                         prjDel.push(r)
                 })
 
             // find project links to be added
-            if (this.state.currentProjects.length > 0)
-                this.state.currentProjects.forEach(r => {
+            if (this.state.currentUser.projects.length > 0)
+                this.state.currentUser.projects.forEach(r => {
                     let found
                     found = dbProjects.some(el => (el.value === r.value && el.label === r.label))
                     if (!found)
@@ -443,7 +431,7 @@ class Users extends React.Component {
             // delete user project links
             prjDel.forEach(async r => {
                 payload = {
-                    userId: this.state.currentUserId,
+                    userId: this.state.currentUser.userId,
                     projectId: r.value
                 }
                 await UserService.deleteUserProjectLink(payload)
@@ -452,7 +440,7 @@ class Users extends React.Component {
             // add user project links
             prjAdd.forEach(async r => {
                 payload = {
-                    userId: this.state.currentUserId,
+                    userId: this.state.currentUser.userId,
                     projectId: r.value
                 }
                 await UserService.addUserProjectLink(payload)
@@ -479,15 +467,11 @@ class Users extends React.Component {
     }
 
     handleRoleChange = selectedRow => {
-        this.setState({
-            currentRole: selectedRow
-        })
+        this.setState({ currentUser: {...this.state.currentUser, role: selectedRow}})
     }
 
     handleProjectChange = selectedRow => {
-        this.setState({
-            currentProjects: selectedRow
-        })
+        this.setState({ currentUser: {...this.state.currentUser, projects: selectedRow}})
     }
 
     deleteUsers = async userIds => {
@@ -507,39 +491,7 @@ class Users extends React.Component {
                             <h2>USER MANAGEMENT</h2>
                         </div><br />
                         <br />
-                        <div>
-                            <ToolkitProvider
-                                keyField='user_id'
-                                data={this.state.users}
-                                columns={this.columns}
-                                search
-                            >
-                                {
-                                    props => (
-                                        <div>
-                                            <div style={{ textAlign: 'left' }}>
-                                                <Button color="success" size="sm" type="button" onClick={() => this.triggerModal(null)}>{'Add user'}</Button>
-                                                <Button color="danger" size="sm" type="button" onClick={() => this.deleteUsers(this.node.selectionContext.selected)}>{'Delete user(s)'}</Button>
-                                                <div style={{ float: 'right' }}>
-                                                    <SearchBar {...props.searchProps} style={{ maxHeight: 30, maxWidth: 250 }} /> {'\t'}
-                                                    <ClearSearchButton {...props.searchProps} className={'btn btn-sm'} />
-                                                </div>
-                                            </div>
-                                            <BootstrapTable
-                                                rowStyle={{backgroundColor: 'white'}}
-                                                hover
-                                                ref={n => this.node = n}
-                                                pagination={paginationFactory()}
-                                                rowEvents={this.rowEvents}
-                                                noDataIndication={() => <this.NoDataIndication />}
-                                                selectRow={this.selectRowProps}
-                                                {...props.baseProps}
-                                            />
-                                        </div>
-                                    )
-                                }
-                            </ToolkitProvider>
-                        </div><br />
+                        <CustomTable data = {this.state.users} columns = {this.columns} addButton={'Add user'} deleteButton={'Delete user(s)'} searchBox handleDelete={this.deleteUsers} handleModalOpen={this.triggerModal} lockedFirstRow/>
                     </div>
                 </div>
 
@@ -565,7 +517,7 @@ class Users extends React.Component {
                     </div>
                     <div className="modal-body" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         {/* profile picture */}
-                        {this.state.modal.title === 'Change User Info' && this.state.currentUser && this.state.profilePicture}
+                        {this.state.modal.title === 'Change User Info' && this.state.currentUser.user && this.state.currentUser.profilePicture}
                         {/* change info */}
                         <Form onSubmit={this.saveChanges}>
                             {this.state.modal.title === 'Change User Info' && <hr className="my-3"></hr>}
@@ -582,7 +534,7 @@ class Users extends React.Component {
                             </label>
                                                 <Input
                                                     className="form-control-alternative"
-                                                    defaultValue={this.state.currentUsername}
+                                                    defaultValue={this.state.currentUser.username}
                                                     disabled
                                                     id="input-username"
                                                     placeholder="Username"
@@ -601,7 +553,7 @@ class Users extends React.Component {
                                                 <Input
                                                     className="form-control-alternative"
                                                     id="input-email"
-                                                    placeholder={this.state.currentUsername + "@hoursly.com"}
+                                                    placeholder={this.state.currentUser.username + "@hoursly.com"}
                                                     disabled
                                                     type="email"
                                                 />
@@ -619,8 +571,8 @@ class Users extends React.Component {
                             </label>
                                             <Input
                                                 className="form-control-alternative"
-                                                defaultValue={this.state.currentFirstName}
-                                                onChange={(e) => this.setState({ currentFirstName: e.target.value })}
+                                                defaultValue={this.state.currentUser.firstName}
+                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, firstName: e.target.value}})}
                                                 id="input-first-name"
                                                 placeholder="First name"
                                                 type="text"
@@ -637,8 +589,8 @@ class Users extends React.Component {
                             </label>
                                             <Input
                                                 className="form-control-alternative"
-                                                defaultValue={this.state.currentLastName}
-                                                onChange={(e) => this.setState({ currentLastName: e.target.value })}
+                                                defaultValue={this.state.currentUser.lastName}
+                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, lastName: e.target.value}})}
                                                 id="input-last-name"
                                                 placeholder="Last name"
                                                 type="text"
@@ -659,8 +611,8 @@ class Users extends React.Component {
                             </label>
                                             <Input
                                                 className="form-control-alternative"
-                                                defaultValue={this.state.currentDepartment}
-                                                onChange={(e) => this.setState({ currentDepartment: e.target.value })}
+                                                defaultValue={this.state.currentUser.department}
+                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, department: e.target.value}})}
                                                 id="input-dep"
                                                 placeholder="Department"
                                                 type="text"
@@ -677,8 +629,8 @@ class Users extends React.Component {
                             </label>
                                             <Input
                                                 className="form-control-alternative"
-                                                defaultValue={this.state.currentPosition}
-                                                onChange={(e) => this.setState({ currentPosition: e.target.value })}
+                                                defaultValue={this.state.currentUser.position}
+                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, position: e.target.value}})}
                                                 id="input-position"
                                                 placeholder="Position"
                                                 type="text"
@@ -692,14 +644,14 @@ class Users extends React.Component {
                         <div style={{ width: "100%" }}>
                             <hr className="my-3"></hr>
                             <div className="form-control-label" style={{ marginLeft: '10px' }}>Role: </div>
-                            <Select options={this.state.rolesArr} defaultValue={this.state.currentRole} onChange={this.handleRoleChange} />
+                            <Select options={this.state.rolesArr} defaultValue={this.state.currentUser.role} onChange={this.handleRoleChange} />
                         </div>
 
                         {/* add project */}
                         <div style={{ width: "100%" }}>
                             <hr className="my-3"></hr>
                             <div className="form-control-label" style={{ marginLeft: '10px' }}>Projects: </div>
-                            <Select options={this.state.projectsArr} defaultValue={this.state.currentProjects} onChange={this.handleProjectChange} isMulti closeMenuOnSelect={false} components={animatedComponents} />
+                            <Select options={this.state.projectsArr} defaultValue={this.state.currentUser.projects} onChange={this.handleProjectChange} isMulti closeMenuOnSelect={false} components={animatedComponents} />
                         </div>
 
 
