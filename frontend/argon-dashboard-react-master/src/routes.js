@@ -18,6 +18,7 @@
 import Dashboard from "views/Dashboard.js";
 import Login from "views/Login.js";
 import Users from "views/Users.js";
+import History from "views/History.js";
 
 var routes = [
   {
@@ -41,6 +42,14 @@ var routes = [
     name: "Users",
     icon: "ni ni-single-02 text-primary",
     component: Users,
+    layout: "/user",
+    role: ['admin']
+  },
+  {
+    path: "/history",
+    name: "history",
+    icon: "ni ni-single-02 text-primary",
+    component: History,
     layout: "/user",
     role: ['admin']
   }

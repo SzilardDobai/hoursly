@@ -10,7 +10,7 @@ import {
 
 const { SearchBar, ClearSearchButton } = Search;
 
-const CustomTable = ( { data, columns, addButton, deleteButton, searchBox, handleDelete, handleModalOpen, lockedFirstRow } ) => {
+const CustomTable = ( { data, columns, addButton, deleteButton, exportCSV, searchBox, handleDelete, handleModalOpen, lockedFirstRow } ) => {
     let selection
 
     const selectRowProps = {
@@ -51,6 +51,7 @@ const CustomTable = ( { data, columns, addButton, deleteButton, searchBox, handl
                 keyField={columns[0].dataField}
                 data={data}
                 columns={columns}
+                exportCSV={{fileName: `${exportCSV}.csv`}}
                 search
             >
                 {
@@ -59,6 +60,7 @@ const CustomTable = ( { data, columns, addButton, deleteButton, searchBox, handl
                             <div style={{ textAlign: 'left' }}>
                                 { addButton && <Button color="success" size="sm" type="button" onClick={() => onModalOpen(null)}>{addButton}</Button> }
                                 { deleteButton && <Button color="danger" size="sm" type="button" onClick={() => onDeleteClick(selection.selectionContext.selected)}>{deleteButton}</Button>}
+                                { exportCSV && <Button color="primary" size="sm" type="button" onClick={() => props.csvProps.onExport()}>Export as CSV</Button>}
                                 { searchBox && <div style={{ float: 'right' }}>
                                     <SearchBar {...props.searchProps} style={{ maxHeight: 30, maxWidth: 250 }} /> {'\t'}
                                     <ClearSearchButton {...props.searchProps} className={'btn btn-sm'} />

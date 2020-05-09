@@ -1,3 +1,11 @@
+Date.prototype.getWeekNumber = function () {
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+};
+
 let query = async (sql, params) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -476,6 +484,36 @@ module.exports = {
     }
     res.send()
   },
+  generateRecords: async () => {
+    let username, project_name, week, year, userProjectLinks
 
- 
+    week = new Date().getWeekNumber()
+    year = new Date().getFullYear()
+    try {
+      userProjectLinks = await query('SELECT * FROM user_project_link', []).then(result => result)
+      for (let i = 0; i < userProjectLinks.length; i++) {
+        username = await (query('SELECT username FROM users WHERE user_id=?', [userProjectLinks[i].user_id])).then(result => result[0].username)
+        if (username === 'admin')
+          continue
+        project_name = await (query('SELECT project_name, isactive FROM projects WHERE project_id=?', [userProjectLinks[i].project_id])).then(result => {
+          if (result[0].isactive === 1)
+            return result[0].project_name
+          else
+            return ''
+        })
+        if (project_name === '')
+          continue
+
+        record_id = await query('SELECT * FROM recorded_hours WHERE project_name=? AND user_name=? AND week=? AND year=?', [project_name, username, week, year]).then(result => result)
+        if (record_id.length > 0)
+          continue
+        else
+          await query('INSERT INTO recorded_hours (project_name, user_name, week, year) VALUES (?,?,?,?)', [project_name, username, week, year]).then(result => result)
+
+        console.log(`Successfully generated record for user ${username} on project ${project_name} (${week}/${year}).`)
+      }
+    } catch (e) {
+      console.log('Error generating records.')
+    }
+  },
 }
