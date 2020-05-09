@@ -19,6 +19,7 @@ import Dashboard from "views/Dashboard.js";
 import Login from "views/Login.js";
 import Users from "views/Users.js";
 import History from "views/History.js";
+import PendingRecords from "views/PendingRecords.js";
 
 var routes = [
   {
@@ -47,9 +48,17 @@ var routes = [
   },
   {
     path: "/history",
-    name: "history",
-    icon: "ni ni-single-02 text-primary",
+    name: "History",
+    icon: "ni ni-calendar-grid-58 text-red",
     component: History,
+    layout: "/user",
+    role: ['admin']
+  },
+  {
+    path: "/pending",
+    name: "Pending",
+    icon: "ni ni-time-alarm text-red",
+    component: PendingRecords,
     layout: "/user",
     role: ['admin']
   }

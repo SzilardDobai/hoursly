@@ -86,6 +86,7 @@ app.post('/deleteUserProjectLink', services.deleteUserProjectLink);
 app.post('/addProject', services.addProject);
 app.post('/deleteProject', services.deleteProjects);
 app.post('/updateProjectInfo', services.updateProjectInfo);
+app.post('/addHours', services.addHours);
 
 //services.generateRecords();
 // set the app to listen on the port

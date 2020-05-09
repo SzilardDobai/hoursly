@@ -516,4 +516,22 @@ module.exports = {
       console.log('Error generating records.')
     }
   },
+   addHours: async (req, res) => {
+    let recordId = req.body.recordId
+    let hours = req.body.hours
+    await new Promise(async (resolve, reject) => {
+      try {
+        let sql = 'UPDATE recorded_hours SET hours=' + hours + ' WHERE record_id=' + recordId
+        let result = await db.query(sql, [recordId, hours])
+        console.log((`Successfully added hours to record ${recordId}`))
+        resolve(result)
+      } catch (error) {
+        return reject(error)
+      }
+    }).catch(() => {
+      console.log(`Error adding hours.`)
+    }
+    )
+    res.send()
+  },
 }
