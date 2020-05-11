@@ -76,6 +76,8 @@ class User extends React.Component {
           <AdminNavbar
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
+            role={sessionStorage.getItem('role')}
+            routes={routes}
           />
           <Switch>
             {this.getRoutes(routes)}

@@ -52,15 +52,15 @@ var routes = [
     icon: "ni ni-calendar-grid-58 text-red",
     component: History,
     layout: "/user",
-    role: ['admin']
+    role: ['admin', 'user']
   },
   {
     path: "/pending",
-    name: "Pending",
+    name: "Pending Records",
     icon: "ni ni-time-alarm text-red",
     component: PendingRecords,
     layout: "/user",
-    role: ['admin']
+    role: ['admin', 'user']
   }
 ];
 export default routes;

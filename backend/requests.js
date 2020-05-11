@@ -45,8 +45,8 @@ const hashCode = function (s) {
 module.exports = {
   getUsers: async (req, res) => {
     // get all users from the database
-    let users = await query('SELECT user_id, username, first_name, last_name, position, department, picture FROM users',[])
-    
+    let users = await query('SELECT user_id, username, first_name, last_name, position, department, picture FROM users', [])
+
     if (users === -1) {
       users = []
       console.log('Error retrieving users.')
@@ -58,8 +58,8 @@ module.exports = {
 
   getRoles: async (req, res) => {
     // get all roles from the database
-    let roles = await query('SELECT * FROM roles',[])
-    
+    let roles = await query('SELECT * FROM roles', [])
+
     if (roles === -1) {
       roles = []
       console.log('Error retrieving roles.')
@@ -149,7 +149,9 @@ module.exports = {
       console.log(`Successfully retrieved project info.`)
     }
   },
+
   getUserInfo: async (req, res) => {
+    // get user_id's info
     let user_id = req.params.userId
     await query('SELECT * FROM users WHERE user_id=?', [user_id]).then(result => {
       if (result.length > 0) {
@@ -164,15 +166,17 @@ module.exports = {
       console.log(`Error retrieving user info for user ${user_id}.`)
     })
   },
+
   getAllUserRecords: async (req, res) => {
+    // get all of userName's records
     let userName = req.params.userName
     let userRecords = await new Promise(async (resolve, reject) => {
       try {
         let sql
         if (userName === 'admin')
-          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE hours is not null ORDER BY year, week DESC`
+          sql = `SELECT rh.record_id as record_id, rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE hours is not null ORDER BY year, week DESC`
         else
-          sql = `SELECT rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE user_name = "${userName}" AND hours is not null ORDER BY year, week DESC`
+          sql = `SELECT rh.record_id as record_id, rh.project_name as project_name, rh.user_name as user_name, rh.week as week, rh.year as year, rh.hours as hours FROM recorded_hours rh WHERE user_name = "${userName}" AND hours is not null ORDER BY year, week DESC`
         let result = await db.query(sql)
         // console.log(result)
         resolve(result)
@@ -232,7 +236,7 @@ module.exports = {
       if (result.length == 0) {
         await query('UPDATE user_role_link SET role_id=? WHERE user_id=?', [role_id, user_id]).then(async result => {
           if (result.changedRows === 0 && result.affectedRows === 0)
-            await query(`INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)`, [user_id, role_id]).then(result => result).catch(e => { console.log(e,'Error adding role.') })
+            await query(`INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)`, [user_id, role_id]).then(result => result).catch(e => { console.log(e, 'Error adding role.') })
           res.send(true)
           console.log('Successfully updated role for user ' + user_id + '.')
         }).catch(e => {
@@ -243,10 +247,11 @@ module.exports = {
         res.send(true)
       }
     })
-    
+
   },
 
   addUserProjectLink: async (req, res) => {
+    // add user - project link
     let userId = req.body.userId
     let projectId = req.body.projectId
     await new Promise(async (resolve, reject) => {
@@ -268,6 +273,7 @@ module.exports = {
   },
 
   deleteUserProjectLink: async (req, res) => {
+    // delete user - project link
     let userId = req.body.userId
     let projectId = req.body.projectId
     await new Promise(async (resolve, reject) => {
@@ -286,7 +292,9 @@ module.exports = {
       })
     res.send()
   },
+
   getUserRecordsWithoutHours: async (req, res) => {
+    // get user records with unmarked hours
     let userName = req.params.userName
     let userRecords = await new Promise(async (resolve, reject) => {
       try {
@@ -325,7 +333,7 @@ module.exports = {
         if (role.length > 0) {
           let role_id = role[0].role_id;
           auth.role_id = role_id
-          
+
           res.send({ auth });
           console.log('Login successful!')
         } else {
@@ -354,7 +362,7 @@ module.exports = {
       await query('INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)', [newUserId, 2]
       ).then(() => {
         console.log(`Sucessfully added role 'user' to user ${req.body.username}.`)
-        res.send({userId: newUserId})
+        res.send({ userId: newUserId })
       }).catch((e) => {
         console.log(`Error adding role 'user' to user ${req.body.username}.`)
       })
@@ -457,7 +465,7 @@ module.exports = {
       await query('INSERT INTO user_project_link (user_id, project_id) VALUES (?,?)', [1, result.insertId]
       ).then(() => {
         console.log(`Sucessfully added user 'admin' to project ${req.body.projectName}.`)
-        res.send({projectId: newProjectId})
+        res.send({ projectId: newProjectId })
       }).catch((e) => {
         console.log(`Error adding user 'admin' to project ${req.body.projectName}.`)
       })
@@ -484,7 +492,9 @@ module.exports = {
     }
     res.send()
   },
+
   generateRecords: async () => {
+    // generate new record for each active project of each user set to current week
     let username, project_name, week, year, userProjectLinks
 
     week = new Date().getWeekNumber()
@@ -516,7 +526,9 @@ module.exports = {
       console.log('Error generating records.')
     }
   },
-   addHours: async (req, res) => {
+
+  addHours: async (req, res) => {
+    // add hours to recordId
     let recordId = req.body.recordId
     let hours = req.body.hours
     await new Promise(async (resolve, reject) => {

@@ -358,7 +358,7 @@ class Users extends React.Component {
                 })
             } else {
                 await UserService.addUser(payload).then(res => {
-                    this.setState({ currentUser: {...this.state.currentUser, userId: res.userId}})
+                    this.setState({ currentUser: { ...this.state.currentUser, userId: res.userId } })
                 }).catch(e => {
                     this.setState({
                         changeSuc: false,
@@ -397,7 +397,7 @@ class Users extends React.Component {
         await ProjectService.getProjects(payload.userId).then(async result => {
             let dbProjects = [], prjDel = [], prjAdd = []
             if (this.state.currentUser.projects === null)
-                this.setState({ currentUser: {...this.state.currentUser, projects: []}})
+                this.setState({ currentUser: { ...this.state.currentUser, projects: [] } })
 
             // get all projects from db linked to current user
             if (result.length > 0) {
@@ -467,11 +467,11 @@ class Users extends React.Component {
     }
 
     handleRoleChange = selectedRow => {
-        this.setState({ currentUser: {...this.state.currentUser, role: selectedRow}})
+        this.setState({ currentUser: { ...this.state.currentUser, role: selectedRow } })
     }
 
     handleProjectChange = selectedRow => {
-        this.setState({ currentUser: {...this.state.currentUser, projects: selectedRow}})
+        this.setState({ currentUser: { ...this.state.currentUser, projects: selectedRow } })
     }
 
     deleteUsers = async userIds => {
@@ -491,7 +491,17 @@ class Users extends React.Component {
                             <h2>USER MANAGEMENT</h2>
                         </div><br />
                         <br />
-                        <CustomTable data = {this.state.users} columns = {this.columns} addButton={'Add user'} deleteButton={'Delete user(s)'} searchBox handleDelete={this.deleteUsers} handleModalOpen={this.triggerModal} lockedFirstRow/>
+                        <CustomTable
+                            data={this.state.users}
+                            columns={this.columns}
+                            addButton={'Add user'}
+                            deleteButton={'Delete user(s)'}
+                            searchBox
+                            handleDelete={this.deleteUsers}
+                            handleModalOpen={this.triggerModal}
+                            lockedFirstRow
+                            selectable
+                        />
                     </div>
                 </div>
 
@@ -572,7 +582,7 @@ class Users extends React.Component {
                                             <Input
                                                 className="form-control-alternative"
                                                 defaultValue={this.state.currentUser.firstName}
-                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, firstName: e.target.value}})}
+                                                onChange={(e) => this.setState({ currentUser: { ...this.state.currentUser, firstName: e.target.value } })}
                                                 id="input-first-name"
                                                 placeholder="First name"
                                                 type="text"
@@ -590,7 +600,7 @@ class Users extends React.Component {
                                             <Input
                                                 className="form-control-alternative"
                                                 defaultValue={this.state.currentUser.lastName}
-                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, lastName: e.target.value}})}
+                                                onChange={(e) => this.setState({ currentUser: { ...this.state.currentUser, lastName: e.target.value } })}
                                                 id="input-last-name"
                                                 placeholder="Last name"
                                                 type="text"
@@ -612,7 +622,7 @@ class Users extends React.Component {
                                             <Input
                                                 className="form-control-alternative"
                                                 defaultValue={this.state.currentUser.department}
-                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, department: e.target.value}})}
+                                                onChange={(e) => this.setState({ currentUser: { ...this.state.currentUser, department: e.target.value } })}
                                                 id="input-dep"
                                                 placeholder="Department"
                                                 type="text"
@@ -630,7 +640,7 @@ class Users extends React.Component {
                                             <Input
                                                 className="form-control-alternative"
                                                 defaultValue={this.state.currentUser.position}
-                                                onChange={(e) => this.setState({ currentUser: {...this.state.currentUser, position: e.target.value}})}
+                                                onChange={(e) => this.setState({ currentUser: { ...this.state.currentUser, position: e.target.value } })}
                                                 id="input-position"
                                                 placeholder="Position"
                                                 type="text"

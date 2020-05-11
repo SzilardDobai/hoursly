@@ -1,6 +1,4 @@
 import React from "react";
-import UserService from '../services/userServices.js';
-import ProjectService from "../services/projectServices.js";
 import Header from "../components/Headers/Header.js";
 import CustomTable from "../components/Other/CustomTable";
 import RecordsServices from "../services/recordsServices.js";
@@ -27,35 +25,38 @@ class Users extends React.Component {
         sort: true,
         hidden: false,
         headerAlign: 'center',
-        headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
-    },{
+        headerStyle: sessionStorage.getItem('role') === 'user' ? { fontWeight: 'bold', backgroundColor: 'white', width: '50%' } : { fontWeight: 'bold', backgroundColor: 'white', width: '25%' },
+        editable: false
+    }, {
         dataField: 'user_name',
         text: 'UserName',
         sort: true,
-        hidden: sessionStorage.getItem('role')==='user' ? true : false,
+        hidden: sessionStorage.getItem('role') === 'user' ? true : false,
         headerAlign: 'center',
-        headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
-    },{
+        headerStyle: sessionStorage.getItem('role') === 'user' ? { fontWeight: 'bold', backgroundColor: 'white', width: '50%' } : { fontWeight: 'bold', backgroundColor: 'white', width: '25%' },
+    }, {
         dataField: 'week',
         text: 'Week',
         sort: true,
         hidden: false,
         headerAlign: 'center',
-        headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
-    },{
+        headerStyle: { fontWeight: 'bold', backgroundColor: 'white', width: '16%' },
+        editable: false
+    }, {
         dataField: 'year',
         text: 'Year',
         sort: true,
         hidden: false,
         headerAlign: 'center',
-        headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
-    },{
+        headerStyle: { fontWeight: 'bold', backgroundColor: 'white', width: '16%' },
+        editable: false
+    }, {
         dataField: 'hours',
         text: 'Hours',
         sort: true,
         hidden: false,
         headerAlign: 'center',
-        headerStyle: { fontWeight: 'bold', backgroundColor: 'white' }
+        headerStyle: { fontWeight: 'bold', backgroundColor: 'white', width: '16%'  }
     }
 ]
 
@@ -78,7 +79,7 @@ class Users extends React.Component {
                             <h2>HISTORY</h2>
                         </div><br />
                         <br />
-                        <CustomTable data = {this.state.history} columns = {this.columns} searchBox exportCSV = 'History'/>
+                        <CustomTable data = {this.state.history} columns = {this.columns} searchBox exportCSV='History'/>
                     </div>
                 </div>
 

@@ -88,7 +88,7 @@ app.post('/deleteProject', services.deleteProjects);
 app.post('/updateProjectInfo', services.updateProjectInfo);
 app.post('/addHours', services.addHours);
 
-//services.generateRecords();
+// services.generateRecords();
 // set the app to listen on the port
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
