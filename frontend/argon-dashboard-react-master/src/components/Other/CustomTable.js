@@ -24,7 +24,7 @@ const CustomTable = ({ data, columns, addButton, deleteButton, exportCSV, search
 
     const rowEvents = {
         onDoubleClick: (e, row, rowIndex) => {
-            if ((rowIndex !== 0 || !lockedFirstRow) && handleModalOpen)
+            if ((row[columns[0].dataField] !== 1 || !lockedFirstRow) && handleModalOpen)
                 onModalOpen(row)
         }
     }
