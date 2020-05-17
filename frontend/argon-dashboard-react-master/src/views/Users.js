@@ -378,7 +378,7 @@ class Users extends React.Component {
             roleId: this.state.currentUser.role.value
         }
 
-        if (this.state.modal.title === 'Change User Info') {
+        //if (this.state.modal.title === 'Change User Info') {
             await UserService.updateUserRole(payload).then(async result => {
                 if (!result) {
                     this.setState({
@@ -392,7 +392,7 @@ class Users extends React.Component {
                     })
                 }
             })
-        }
+        //}
 
         await ProjectService.getProjects(payload.userId).then(async result => {
             let dbProjects = [], prjDel = [], prjAdd = []
