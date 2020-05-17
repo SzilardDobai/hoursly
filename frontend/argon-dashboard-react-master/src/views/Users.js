@@ -371,14 +371,14 @@ class Users extends React.Component {
                     })
                 })
             }
-        }
 
-        payload = {
-            userId: this.state.currentUser.userId,
-            roleId: this.state.currentUser.role.value
-        }
 
-        //if (this.state.modal.title === 'Change User Info') {
+            payload = {
+                userId: this.state.currentUser.userId,
+                roleId: this.state.currentUser.role.value
+            }
+
+            //if (this.state.modal.title === 'Change User Info') {
             await UserService.updateUserRole(payload).then(async result => {
                 if (!result) {
                     this.setState({
@@ -392,70 +392,71 @@ class Users extends React.Component {
                     })
                 }
             })
-        //}
+            //}
 
-        await ProjectService.getProjects(payload.userId).then(async result => {
-            let dbProjects = [], prjDel = [], prjAdd = []
-            if (this.state.currentUser.projects === null)
-                this.setState({ currentUser: { ...this.state.currentUser, projects: [] } })
+            await ProjectService.getProjects(payload.userId).then(async result => {
+                let dbProjects = [], prjDel = [], prjAdd = []
+                if (this.state.currentUser.projects === null)
+                    this.setState({ currentUser: { ...this.state.currentUser, projects: [] } })
 
-            // get all projects from db linked to current user
-            if (result.length > 0) {
-                result.forEach(r => {
-                    if (r.isactive === 1)
-                        dbProjects.push({
-                            value: r.project_id,
-                            label: r.project_name
-                        })
-                })
-            }
-
-            //  find project links to be deleted
-            if (dbProjects.length > 0)
-                dbProjects.forEach(r => {
-                    let found
-                    found = this.state.currentUser.projects.some(el => (el.value === r.value && el.label === r.label))
-                    if (!found)
-                        prjDel.push(r)
-                })
-
-            // find project links to be added
-            if (this.state.currentUser.projects.length > 0)
-                this.state.currentUser.projects.forEach(r => {
-                    let found
-                    found = dbProjects.some(el => (el.value === r.value && el.label === r.label))
-                    if (!found)
-                        prjAdd.push(r)
-                })
-
-            // delete user project links
-            prjDel.forEach(async r => {
-                payload = {
-                    userId: this.state.currentUser.userId,
-                    projectId: r.value
+                // get all projects from db linked to current user
+                if (result.length > 0) {
+                    result.forEach(r => {
+                        if (r.isactive === 1)
+                            dbProjects.push({
+                                value: r.project_id,
+                                label: r.project_name
+                            })
+                    })
                 }
-                await UserService.deleteUserProjectLink(payload)
+
+                //  find project links to be deleted
+                if (dbProjects.length > 0)
+                    dbProjects.forEach(r => {
+                        let found
+                        found = this.state.currentUser.projects.some(el => (el.value === r.value && el.label === r.label))
+                        if (!found)
+                            prjDel.push(r)
+                    })
+
+                // find project links to be added
+                if (this.state.currentUser.projects.length > 0)
+                    this.state.currentUser.projects.forEach(r => {
+                        let found
+                        found = dbProjects.some(el => (el.value === r.value && el.label === r.label))
+                        if (!found)
+                            prjAdd.push(r)
+                    })
+
+                // delete user project links
+                prjDel.forEach(async r => {
+                    payload = {
+                        userId: this.state.currentUser.userId,
+                        projectId: r.value
+                    }
+                    await UserService.deleteUserProjectLink(payload)
+                })
+
+                // add user project links
+                prjAdd.forEach(async r => {
+                    payload = {
+                        userId: this.state.currentUser.userId,
+                        projectId: r.value
+                    }
+                    await UserService.addUserProjectLink(payload)
+                })
             })
 
-            // add user project links
-            prjAdd.forEach(async r => {
-                payload = {
-                    userId: this.state.currentUser.userId,
-                    projectId: r.value
-                }
-                await UserService.addUserProjectLink(payload)
+            this.setState({
+                changeSuc: true,
+                changeErr: false,
+                changeErrData: '',
+                dangerDepartment: 'has-success',
+                dangerPosition: 'has-success',
+                dangerFirstName: 'has-success',
+                dangerLastName: 'has-success',
             })
-        })
-
-        this.setState({
-            changeSuc: true,
-            changeErr: false,
-            changeErrData: '',
-            dangerDepartment: 'has-success',
-            dangerPosition: 'has-success',
-            dangerFirstName: 'has-success',
-            dangerLastName: 'has-success',
-        })
+        }
         this.triggerReRender();
     }
 

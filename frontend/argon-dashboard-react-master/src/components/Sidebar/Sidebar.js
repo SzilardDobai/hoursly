@@ -155,10 +155,18 @@ class Sidebar extends React.Component {
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Welcome!</h6>
                 </DropdownItem>
-                <DropdownItem to="/user/dashboard" tag={Link}>
-                  <i className="ni ni-circle-08" />
-                  <span>Dashboard</span>
-                </DropdownItem>
+                {this.props.routes.map(item => {
+                    if (item.role.includes(this.props.role)) {
+                      const icon = item.icon.split(' ')
+                      return (
+                        <DropdownItem to={item.layout + item.path} tag={Link} key={item.name}>
+                          <i className={icon[0] + ' ' + icon[1]} />
+                          <span>{item.name}</span>
+                        </DropdownItem>
+                      )
+                    }
+                    return null
+                  })}
                 <DropdownItem divider />
                 <DropdownItem to="/auth/login" tag={Link}>
                   <i className="ni ni-user-run" />
