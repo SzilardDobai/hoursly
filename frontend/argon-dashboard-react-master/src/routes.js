@@ -15,63 +15,61 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import Index from "views/Index.js";
-import Profile from "views/examples/Profile.js";
-import Maps from "views/examples/Maps.js";
-import Register from "views/examples/Register.js";
-import Login from "views/examples/Login.js";
-import Tables from "views/examples/Tables.js";
-import Icons from "views/examples/Icons.js";
+import Dashboard from "views/Dashboard.js";
+import Login from "views/Login.js";
+import Users from "views/Users.js";
+import History from "views/History.js";
+import PendingRecords from "views/PendingRecords.js";
+import Projects from "views/Projects.js";
 
 var routes = [
   {
-    path: "/index",
+    path: "/dashboard",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
-    component: Index,
-    layout: "/admin"
-  },
-  {
-    path: "/icons",
-    name: "Icons",
-    icon: "ni ni-planet text-blue",
-    component: Icons,
-    layout: "/admin"
-  },
-  {
-    path: "/maps",
-    name: "Maps",
-    icon: "ni ni-pin-3 text-orange",
-    component: Maps,
-    layout: "/admin"
-  },
-  {
-    path: "/user-profile",
-    name: "User Profile",
-    icon: "ni ni-single-02 text-yellow",
-    component: Profile,
-    layout: "/admin"
-  },
-  {
-    path: "/tables",
-    name: "Tables",
-    icon: "ni ni-bullet-list-67 text-red",
-    component: Tables,
-    layout: "/admin"
+    icon: "ni ni-circle-08 text-yellow",
+    component: Dashboard,
+    layout: "/user",
+    role: ['admin', 'user']
   },
   {
     path: "/login",
     name: "Login",
     icon: "ni ni-key-25 text-info",
     component: Login,
-    layout: "/auth"
+    layout: "/auth",
+    role: []
   },
   {
-    path: "/register",
-    name: "Register",
-    icon: "ni ni-circle-08 text-pink",
-    component: Register,
-    layout: "/auth"
+    path: "/users",
+    name: "Users",
+    icon: "ni ni-single-02 text-primary",
+    component: Users,
+    layout: "/user",
+    role: ['admin']
+  },
+  {
+    path: "/projects",
+    name: "Projects",
+    icon: "ni ni-collection text-purple",
+    component: Projects,
+    layout: "/user",
+    role: ['admin']
+  },
+  {
+    path: "/history",
+    name: "History",
+    icon: "ni ni-calendar-grid-58 text-red",
+    component: History,
+    layout: "/user",
+    role: ['admin', 'user']
+  },
+  {
+    path: "/pending",
+    name: "Pending Records",
+    icon: "ni ni-time-alarm text-red",
+    component: PendingRecords,
+    layout: "/user",
+    role: ['admin', 'user']
   }
 ];
 export default routes;

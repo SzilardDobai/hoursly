@@ -182,7 +182,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','admin','admin','admin','admin','admin',NULL,1),(2,'test.user','test','Test','User','Testing','Intern',NULL,1);
+INSERT INTO `users` VALUES (1,'admin','92668751','admin','admin','admin','admin',NULL,1),(2,'test.user','test','Test','User','Testing','Intern',NULL,1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
