@@ -361,7 +361,7 @@ class Projects extends React.Component {
                             <h2>PROJECT MANAGEMENT</h2>
                         </div><br />
                         <br />
-                        <CustomTable data={this.state.projects} columns={this.columns} addButton={'Add project'} deleteButton={'Delete project(s)'} searchBox handleDelete={this.deleteProjects} handleModalOpen={this.triggerModal} />
+                        <CustomTable data={this.state.projects} columns={this.columns} addButton={'Add project'} deleteButton={'Delete project(s)'} searchBox handleDelete={this.deleteProjects} handleModalOpen={this.triggerModal} selectable/>
                     </div>
                 </div>
 
