@@ -140,7 +140,7 @@ class Login extends React.Component {
       <>
         <Col>
           <div >
-            <img src={require("../assets/img/in-app-pic.jpg")} width="75%" alt="generic_user_photo"/>
+            <img src={require("../assets/img/in-app-pic.jpg")} width="100%" alt="generic_user_photo"/>
             <p></p>
           </div>
         </Col>
