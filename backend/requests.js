@@ -1,3 +1,17 @@
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.mailtrap.io',
+  port: 2525,
+  auth: {
+    user: 'ef7b22d6b312bd',
+    pass: 'f3b8eb8c6c223a'
+  }
+});
+
+const sender = 'admin'
+const domain = 'hoursly.com'
+
 Date.prototype.getWeekNumber = function () {
   var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
   var dayNum = d.getUTCDay() || 7;
@@ -217,10 +231,31 @@ module.exports = {
     let last_name = req.body.lastName
     let department = req.body.department
     let position = req.body.position
+    let username
 
     await query('UPDATE users SET first_name=?, last_name=?, department=?, position=? WHERE user_id=?', [first_name, last_name, department, position, user_id]).then(async result => {
       res.send(true)
       console.log('Successfully updated info for user ' + user_id + '.')
+      username = await query('SELECT username FROM users WHERE user_id=?', [user_id]).then(result => result[0].username)
+      const mailOptions = {
+        from: `${sender}@${domain}`,
+        to: username + `@${domain}`,
+        subject: 'User details changed',
+        html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${username}! Your new user info:<br></br>&nbsp;First name: ${first_name}<br></br>&nbsp;Last name: ${last_name}<br></br>&nbsp;Department: ${department}<br></br>&nbsp;Position: ${position}<br></br><p>Thank you for using hoursly.com</p>`,
+        attachments: [{
+          filename: 'hoursly.png',
+          path: './hoursly.png',
+          cid: 'hoursly'
+        }]
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
     }).catch(e => {
       res.send(false)
       console.log('Error updating info for user ' + user_id + '.')
@@ -231,14 +266,35 @@ module.exports = {
     // update user_id's role
     let user_id = req.body.userId
     let role_id = req.body.roleId
-
+    let username, rolename;
     await query('SELECT * FROM user_role_link WHERE user_id=? AND role_id=?', [user_id, role_id]).then(async result => {
       if (result.length == 0) {
         await query('UPDATE user_role_link SET role_id=? WHERE user_id=?', [role_id, user_id]).then(async result => {
           if (result.changedRows === 0 && result.affectedRows === 0)
             await query(`INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)`, [user_id, role_id]).then(result => result).catch(e => { console.log(e, 'Error adding role.') })
-          res.send(true)
+          username = await query('SELECT username FROM users WHERE user_id=?', [user_id]).then(result => result[0].username)
+          rolename = await query('SELECT rolename FROM roles WHERE role_id=?', [role_id]).then(result => result[0].rolename)
+          const mailOptions = {
+            from: `${sender}@${domain}`,
+            to: username + `@${domain}`,
+            subject: 'New role',
+            html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${username}! You have been assigned a new role: '${rolename}'.<br></br><p>Thank you for using hoursly.com</p>`,
+            attachments: [{
+              filename: 'hoursly.png',
+              path: './hoursly.png',
+              cid: 'hoursly'
+            }]
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
           console.log('Successfully updated role for user ' + user_id + '.')
+          res.send(true)
         }).catch(e => {
           res.send(false)
           console.log('Error updating role for user ' + user_id + '.')
@@ -254,19 +310,41 @@ module.exports = {
     // add user - project link
     let userId = req.body.userId
     let projectId = req.body.projectId
+    let username, projectname;
     await new Promise(async (resolve, reject) => {
       try {
         let sql = `INSERT INTO user_project_link (user_id, project_id) VALUES (?,?)`
         let result = await db.query(sql, [userId, projectId])
+        username = await query('SELECT username FROM users WHERE user_id=?', [userId]).then(result => result[0].username)
+        projectname = await query('SELECT project_name FROM projects WHERE project_id=?', [projectId]).then(result => result[0].project_name)
         resolve(result)
       } catch (error) {
         return reject(error)
       }
     }).then(() => {
-      console.log(`Successfully added user ${userId} to project ${projectId}.`)
+      console.log(`Successfully added user ${username}(${userId}) to project ${projectname}(${projectId}).`)
+      const mailOptions = {
+        from: `${sender}@${domain}`,
+        to: username + `@${domain}`,
+        subject: 'New project assignment',
+        html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${username}! You have been assigned to a new project: ${projectname}. Good luck!<br></br><p>Thank you for using hoursly.com</p>`,
+        attachments: [{
+          filename: 'hoursly.png',
+          path: './hoursly.png',
+          cid: 'hoursly'
+        }]
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
     })
       .catch(() => {
-        console.log(`Error adding user ${userId} to project ${projectId}.`)
+        console.log(`Error adding user ${username}(${userId}) to project ${projectname}(${projectId}).`)
       })
 
     res.send()
@@ -276,16 +354,38 @@ module.exports = {
     // delete user - project link
     let userId = req.body.userId
     let projectId = req.body.projectId
+    let username, projectname;
     await new Promise(async (resolve, reject) => {
       try {
         let sql = `DELETE FROM user_project_link WHERE project_id=${projectId} AND user_id=${userId};`
         let result = await db.query(sql)
+        username = await query('SELECT username FROM users WHERE user_id=?', [userId]).then(result => result[0].username)
+        projectname = await query('SELECT project_name FROM projects WHERE project_id=?', [projectId]).then(result => result[0].project_name)
         resolve(result)
       } catch (error) {
         return reject(error)
       }
     }).then(() => {
       console.log(`Successfully removed user ${userId} from project ${projectId}.`)
+      const mailOptions = {
+        from: `${sender}@${domain}`,
+        to: username + `@${domain}`,
+        subject: 'Removed from project.',
+        html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${username}! You have been removed from the project: ${projectname}.<br></br><p>Thank you for using hoursly.com</p>`,
+        attachments: [{
+          filename: 'hoursly.png',
+          path: './hoursly.png',
+          cid: 'hoursly'
+        }]
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
     })
       .catch(() => {
         console.log(`Error removing user ${userId} from project ${projectId}.`)
@@ -361,6 +461,26 @@ module.exports = {
       newUserId = result.insertId
       await query('INSERT INTO user_role_link (user_id, role_id) VALUES (?,?)', [newUserId, 2]
       ).then(() => {
+        const mailOptions = {
+          from: `${sender}@${domain}`,
+          to: req.body.username + `@${domain}`,
+          subject: 'New account created',
+          html: '<img src="cid:hoursly" height="100px"></img><p>Welcome to Hoursly!</p><p>Username: ' + req.body.username + '.<br></br>Password: ' + generatedPassword + '</p><br></br><p>Thank you for using hoursly.com</p>',
+          attachments: [{
+            filename: 'hoursly.png',
+            path: './hoursly.png',
+            cid: 'hoursly'
+          }]
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+
         console.log(`Sucessfully added role 'user' to user ${req.body.username}.`)
         res.send({ userId: newUserId })
       }).catch((e) => {
@@ -423,6 +543,27 @@ module.exports = {
         if (user.length > 0) {
           console.log(`Sucessfully updated password for user ${user[0].username}.`)
           passwordChangedSuccessfully = true
+
+          const mailOptions = {
+            from: `${sender}@${domain}`,
+            to: user[0].username + `@${domain}`,
+            subject: 'Password change.',
+            html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${user[0].username}! Your password has been successfully changed! Your new password is '${req.body.password}'<br></br><p>Thank you for using hoursly.com</p>`,
+            attachments: [{
+              filename: 'hoursly.png',
+              path: './hoursly.png',
+              cid: 'hoursly'
+            }]
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
         } else {
           throw "Error updating password for user."
         }
@@ -496,8 +637,9 @@ module.exports = {
   generateRecords: async () => {
     // generate new record for each active project of each user set to current week
     let username, project_name, week, year, userProjectLinks
-
-    week = new Date().getWeekNumber()
+    let userMailingInfo = {}
+    // week = new Date().getWeekNumber()
+    week = 5;
     year = new Date().getFullYear()
     try {
       userProjectLinks = await query('SELECT * FROM user_project_link', []).then(result => result)
@@ -505,6 +647,7 @@ module.exports = {
         username = await (query('SELECT username FROM users WHERE user_id=?', [userProjectLinks[i].user_id])).then(result => result[0].username)
         if (username === 'admin')
           continue
+        userMailingInfo[username] = []
         project_name = await (query('SELECT project_name, isactive FROM projects WHERE project_id=?', [userProjectLinks[i].project_id])).then(result => {
           if (result[0].isactive === 1)
             return result[0].project_name
@@ -519,12 +662,35 @@ module.exports = {
           continue
         else
           await query('INSERT INTO recorded_hours (project_name, user_name, week, year) VALUES (?,?,?,?)', [project_name, username, week, year]).then(result => result)
-
+        userMailingInfo[username].push(project_name)
         console.log(`Successfully generated record for user ${username} on project ${project_name} (${week}/${year}).`)
       }
     } catch (e) {
       console.log('Error generating records.')
     }
+    Object.keys(userMailingInfo).forEach(item => {
+      if (userMailingInfo[item].length > 0) {
+        const mailOptions = {
+          from: `${sender}@${domain}`,
+          to: item + `@${domain}`,
+          subject: 'Recording hours reminder.',
+          html: `<img src="cid:hoursly" height="100px"></img><p>Hello, ${item}! Please remember to log your hours for this week on your currently active projects: ${userMailingInfo[item].join()}.<br></br><p>Thank you for using hoursly.com</p>`,
+          attachments: [{
+            filename: 'hoursly.png',
+            path: './hoursly.png',
+            cid: 'hoursly'
+          }]
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+      }
+    })
   },
 
   addHours: async (req, res) => {
