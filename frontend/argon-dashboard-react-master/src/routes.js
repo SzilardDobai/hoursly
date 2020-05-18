@@ -20,6 +20,7 @@ import Login from "views/Login.js";
 import Users from "views/Users.js";
 import History from "views/History.js";
 import PendingRecords from "views/PendingRecords.js";
+import Projects from "views/Projects.js";
 
 var routes = [
   {
@@ -61,6 +62,14 @@ var routes = [
     component: PendingRecords,
     layout: "/user",
     role: ['admin', 'user']
+  },
+  {
+    path: "/projects",
+    name: "Projects",
+    icon: "ni ni-collection text-purple",
+    component: Projects,
+    layout: "/user",
+    role: ['admin']
   }
 ];
 export default routes;
