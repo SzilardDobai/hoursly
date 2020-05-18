@@ -61,7 +61,7 @@ class PendingRecords extends React.Component {
         editable: true,
         editCellStyle: { width: '13%', height: '50px' },
         validator: (newValue, row, column) => {
-            if (newValue === parseInt(newValue, 10))
+            if (newValue == parseInt(newValue, 10))
                 return true
             else
                 return { valid: false, message: 'Value must be an integer.' }
