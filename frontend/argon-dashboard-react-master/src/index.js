@@ -26,7 +26,7 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 
-export let server = "http://localhost:4010/"
+export let server = "https://hoursly-backend.herokuapp.com/"
 
 ReactDOM.render(
   <BrowserRouter>
