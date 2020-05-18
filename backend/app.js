@@ -101,6 +101,6 @@ new cronJob("0 5 * * 1", function() {
 }, null, true);
 
 // set the app to listen on the port
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log(`Server running on port: ${port}`);
 });
