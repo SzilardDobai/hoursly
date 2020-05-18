@@ -79,7 +79,7 @@ class Users extends React.Component {
                             <h2>HISTORY</h2>
                         </div><br />
                         <br />
-                        <CustomTable data = {this.state.history} columns = {this.columns} searchBox exportCSV='History'/>
+                        <CustomTable data = {this.state.history} columns = {this.columns} searchBox exportCSV='History'  selectable deleteButton={'delete'}/>
                     </div>
                 </div>
 

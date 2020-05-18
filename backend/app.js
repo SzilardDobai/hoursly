@@ -96,9 +96,9 @@ app.post('/updateProjectInfo', services.updateProjectInfo);
 app.post('/addHours', services.addHours);
 
 // generate user records weekly (every monday at 5 am)
-new cronJob("0 5 * * 1", function() {
+// new cronJob("0 5 * * 1", function() {
     services.generateRecords();
-}, null, true);
+// }, null, true);
 
 // set the app to listen on the port
 app.listen(process.env.PORT || port, () => {
