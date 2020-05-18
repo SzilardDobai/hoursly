@@ -638,8 +638,7 @@ module.exports = {
     // generate new record for each active project of each user set to current week
     let username, project_name, week, year, userProjectLinks
     let userMailingInfo = {}
-    //week = new Date().getWeekNumber()
-    week=21
+    week = new Date().getWeekNumber()
     year = new Date().getFullYear()
     try {
       userProjectLinks = await query('SELECT * FROM user_project_link', []).then(result => result)
