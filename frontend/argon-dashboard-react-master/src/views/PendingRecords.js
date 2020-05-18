@@ -92,7 +92,7 @@ class PendingRecords extends React.Component {
                             <h2>PENDING RECORDS</h2>
                         </div><br />
                         <br />
-                        <CustomTable data={this.state.pending} columns={this.columns} searchBox editable={this.onCellEdit} selectable deleteButton={'delete'}/>
+                        <CustomTable data={this.state.pending} columns={this.columns} searchBox editable={this.onCellEdit}/>
                     </div>
                 </div>
 

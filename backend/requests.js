@@ -639,7 +639,7 @@ module.exports = {
     let username, project_name, week, year, userProjectLinks
     let userMailingInfo = {}
     //week = new Date().getWeekNumber()
-    week=20
+    week=21
     year = new Date().getFullYear()
     try {
       userProjectLinks = await query('SELECT * FROM user_project_link', []).then(result => result)
