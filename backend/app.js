@@ -59,8 +59,15 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
-app.use(cors({origin: 'http://localhost:3000', credentials: true}));
+// app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 // app.use(cors({origin: 'http://192.168.1.6:3000', credentials: true}));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", 'https://hoursly.herokuapp.com'); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Credentials", true);
+    res.header('Access-Control-Allow-Methods', 'OPTIONS,GET,PUT,POST,DELETE');
+    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+    next();
+  });
 app.use(fileUpload()); // configure fileupload
 
 // routes for the app

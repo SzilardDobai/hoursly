@@ -48,6 +48,14 @@ var routes = [
     role: ['admin']
   },
   {
+    path: "/projects",
+    name: "Projects",
+    icon: "ni ni-collection text-purple",
+    component: Projects,
+    layout: "/user",
+    role: ['admin']
+  },
+  {
     path: "/history",
     name: "History",
     icon: "ni ni-calendar-grid-58 text-red",
@@ -62,14 +70,6 @@ var routes = [
     component: PendingRecords,
     layout: "/user",
     role: ['admin', 'user']
-  },
-  {
-    path: "/projects",
-    name: "Projects",
-    icon: "ni ni-collection text-purple",
-    component: Projects,
-    layout: "/user",
-    role: ['admin']
   }
 ];
 export default routes;

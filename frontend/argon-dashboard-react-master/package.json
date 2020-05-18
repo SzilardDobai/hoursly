@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/argon-dashboard-react/issues"
   },
-  "homepage": "https://demos.creative-tim.com/argon-dashboard-react/",
+  "homepage": "https://hoursly.herokuapp.com/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -74,5 +74,9 @@
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8",
     "typescript": "3.7.5"
+  },
+  "engines": {
+    "npm": "6.13.4",
+    "node": "12.16.0"
   }
 }
